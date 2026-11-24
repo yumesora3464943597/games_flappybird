@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>开发者社区 - 极客视界</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --text:#1f2329; --muted:#8f959e;
+    --line:#e5e6eb; --accent:#1e80ff; --hover:#f2f3f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.8;font-size:15px;
+  }
+  
+  /* 顶部导航 */
+  header{
+    background:#fff;border-bottom:1px solid var(--line);position:fixed;width:100%;top:0;z-index:100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .header-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:700;font-size:20px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:8px;}
+  .logo svg{width:24px;height:24px;fill:var(--accent)}
+  .nav-links{display:flex;gap:24px;font-size:15px;}
+  .nav-links a{color:var(--text);text-decoration:none;transition:color .2s;cursor:pointer;}
+  .nav-links a:hover{color:var(--accent);}
+  .nav-links a.active{color:var(--accent); font-weight:600;}
+  .search-box{width:200px;height:32px;background:var(--hover);border-radius:16px;display:flex;align-items:center;padding:0 12px;color:var(--muted);font-size:13px;}
+  
+  /* 主体布局 */
+  .layout{max-width:1200px;margin:0 auto;padding:80px 20px 100px;display:flex;gap:24px;align-items:flex-start;}
+  .main-content{flex:1; min-height: 8000px; max-width:800px;}
+  
+  /* 多页面切换 */
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* 资讯卡片 */
+  .article-card{
+    background:#fff;border-radius:8px;padding:28px;margin-bottom:20px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.03);border:1px solid transparent;transition:border-color .2s;
+    cursor:pointer;
+  }
+  .article-card:hover{border-color:#e0e0e0; box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+  
+  .info{display:flex;flex-direction:column;}
+  .info h2{font-size:22px;font-weight:600;margin-bottom:14px;color:#252933;line-height:1.4;}
+  .info h2 a{text-decoration:none;color:inherit;transition:color .2s;}
+  .info h2 a:hover{color:var(--accent);}
+  .info p{color:#515767;font-size:15px;margin-bottom:18px;line-height:1.9; text-align: justify;}
+  
+  .meta{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:16px;}
+  .tags span{background:var(--hover);color:#515767;padding:4px 12px;border-radius:4px;margin-right:8px;font-size:12px;}
+  .author{display:flex;align-items:center;gap:8px;}
+  .avatar{width:26px;height:26px;border-radius:50%;background:#ccc;}
+
+  /* 文章详情页 */
+  .article-detail { background: #fff; padding: 48px; border-radius: 8px; box-shadow:0 1px 3px rgba(0,0,0,0.03); }
+  .article-detail h1 { font-size: 34px; margin-bottom: 24px; color: #252933; line-height: 1.3;}
+  .article-detail .meta { margin-bottom: 36px; border-bottom: 1px solid var(--line); padding-bottom: 24px; border-top: none; padding-top: 0;}
+  .article-detail p { margin-bottom: 24px; font-size: 16px; color: #333; line-height: 2; text-align: justify;}
+  .article-detail h2 { font-size: 26px; margin: 48px 0 20px; color: #252933; border-left: 4px solid var(--accent); padding-left: 12px;}
+  .article-detail h3 { font-size: 20px; margin: 32px 0 16px; color: #1f2937; }
+  .article-detail ul, .article-detail ol { margin-bottom: 24px; padding-left: 28px; color: #333; font-size: 16px; line-height: 2;}
+  .article-detail pre { background: #282c34; color: #abb2bf; padding: 24px; border-radius: 6px; overflow-x: auto; margin-bottom: 28px; font-family: "Cascadia Code", Consolas, monospace; font-size: 14px; line-height: 1.6;}
+  .article-detail code { background: #f2f3f5; padding: 2px 6px; border-radius: 4px; color: #e83e8c; font-family: monospace; }
+  .article-detail pre code { background: transparent; color: inherit; padding: 0; }
+  .back-btn { display: inline-block; margin-bottom: 24px; color: var(--accent); cursor: pointer; text-decoration: none; font-weight: 500; font-size: 15px;}
+  .back-btn:hover { text-decoration: underline; }
+
+  /* 右侧边栏 */
+  .sidebar{width:320px;flex-shrink:0;}
+  .side-box{background:#fff;border-radius:8px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.03);position:sticky;top:80px;}
+  .side-title{font-size:16px;font-weight:600;margin-bottom:18px;color:#252933;border-bottom:1px solid var(--line);padding-bottom:14px;}
+  .side-list{list-style:none;}
+  .side-list li{margin-bottom:22px;}
+  .side-list h4{font-size:15px;font-weight:500;margin-bottom:8px;line-height:1.5;}
+  .side-list h4 a{text-decoration:none;color:#252933;cursor:pointer;}
+  .side-list h4 a:hover{color:var(--accent);}
+  .side-list .sub{font-size:12px;color:var(--muted);}
+
+  /* ===== 新增内容页样式 ===== */
+  #sideTags span{white-space:nowrap;}
+  .page-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;}
+  .page-head h3{font-size:19px;font-weight:600;color:#252933;}
+  .page-head span{font-size:12px;color:var(--muted);}
+
+  .pin-card{background:#fff;border-radius:8px;padding:24px 28px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.03);}
+  .pin-head{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-bottom:12px;}
+  .pin-head .avatar{width:24px;height:24px;}
+  .pin-card p{font-size:15px;color:#333;line-height:1.9;text-align:justify;}
+  .pin-actions{display:flex;gap:20px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:12px;color:var(--muted);}
+
+  .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px;}
+  .mini-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:20px;cursor:pointer;transition:border-color .2s,box-shadow .2s;}
+  .mini-card:hover{border-color:#dfe3e8;box-shadow:0 4px 16px rgba(0,0,0,.05);}
+  .mini-cover{height:58px;border-radius:6px;background:linear-gradient(135deg,#eef3fa,#dde7f2);margin-bottom:14px;}
+  .mini-title{font-weight:600;font-size:14px;line-height:1.6;color:#252933;}
+  .mini-sub{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7;}
+  .mini-price{font-size:13px;font-weight:600;color:var(--accent);margin-top:10px;}
+
+  .rank-row{display:flex;align-items:center;gap:16px;background:#fff;border-radius:8px;padding:16px 22px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.03);}
+  .rank-no{width:28px;font-family:"Cascadia Code",Consolas,monospace;font-weight:700;color:var(--accent);font-size:16px;}
+  .rank-main{flex:1;min-width:0;}
+  .rank-main h4{font-size:14px;font-weight:500;color:#252933;line-height:1.6;margin-bottom:4px;}
+  .rank-main .sub{font-size:12px;color:var(--muted);}
+  .rank-val{font-family:"Cascadia Code",Consolas,monospace;font-size:13px;color:#515767;}
+
+  .event-card{display:flex;gap:20px;align-items:flex-start;background:#fff;border-radius:8px;padding:24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.03);}
+  .event-date{width:64px;flex-shrink:0;text-align:center;border-right:1px solid var(--line);padding-right:16px;}
+  .event-date b{display:block;font-size:22px;color:var(--accent);font-family:"Cascadia Code",Consolas,monospace;}
+  .event-date span{font-size:11px;color:var(--muted);}
+  .event-body h4{font-size:16px;font-weight:600;color:#252933;margin-bottom:8px;}
+  .event-body p{font-size:13px;color:#515767;line-height:1.8;}
+
+  .article-detail .meta .tags span{background:var(--hover);}
+
+  /* ================= 游戏窗口（极低透明度 0.04） ================= */
+  .game-card{
+    position: fixed;
+    bottom: 10vh; 
+    right: calc(max(20px, (100vw - 1200px) / 2 + 20px));
+    width: 240px;
+    z-index: 9999;
+    background:#fff;border:1px solid var(--line);border-radius:12px;
+    overflow:hidden;outline:none;cursor: default;
+    opacity:var(--card-alpha,0.048);
+    user-select:none;-webkit-user-select:none;-ms-user-select:none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    transition: opacity 0.2s;
+  }
+  
+  .game-card.dragging {
+    cursor: grabbing;
+    opacity: 0.18;
+  }
+  
+  .game-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .game-head .title{display:flex;align-items:center;gap:6px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;}
+  .game-score{font-family:"Cascadia Code",Consolas,monospace;font-size:12px;color:#374151}
+  
+  /* 金币显示 */
+  .coin-display{display:flex;align-items:center;gap:4px;font-family:"Cascadia Code",Consolas,monospace;font-size:12px;color:#374151;}
+  .coin-icon{width:8px;height:8px;border-radius:50%;background:#535353;}
+
+  .game-wrap{position:relative;background:#f7f7f7;line-height:0}
+  canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none}
+
+  /* ===== 游戏界面层（主页 / 记录 / 暂停 / 结算） ===== */
+  .screen{
+    position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+    gap:9px;padding:16px 18px;text-align:center;line-height:1.4;
+    background:rgba(250,252,254,0.55);
+    font-family:"Cascadia Code",Consolas,monospace;
+  }
+  .screen.show{display:flex}
+  .screen.dim{background:rgba(248,250,252,0.88)}
+  .home-logo{font-weight:800;font-size:26px;letter-spacing:2px;color:#535353}
+  .home-sub{font-size:10px;letter-spacing:1.6px;color:#a2abb5;margin-bottom:6px}
+  .panel-title{font-weight:700;font-size:15px;letter-spacing:1.4px;color:#535353;margin-bottom:2px}
+  .btn{
+    width:136px;padding:9px 0;border-radius:7px;border:1px solid #d8dee5;background:#fff;color:#4b5563;
+    font-family:"Cascadia Code",Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:.6px;
+    cursor:pointer;transition:background .15s,border-color .15s,transform .1s;
+  }
+  .btn:hover{background:#f1f4f7;border-color:#c6d0da}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:#535353;border-color:#464646;color:#fff}
+  .btn-primary:hover{background:#3f3f3f;border-color:#383838}
+  .btn-sm{width:auto;padding:6px 14px;font-size:11px;font-weight:500;letter-spacing:0}
+  .records{width:100%;max-width:190px;font-size:11px;color:#4b5563;text-align:left}
+  .records .row{display:flex;justify-content:space-between;gap:8px;padding:5px 2px;border-bottom:1px dashed #e4e8ed}
+  .records .row span:first-child{color:#9aa3ad}
+  .records .row span:last-child{font-weight:700;color:#535353}
+  .records .empty{text-align:center;color:#9aa3ad;padding:10px 0}
+  .records .sum{margin-top:8px;font-size:11px;color:#8f959e;text-align:center;border:none;justify-content:center;gap:14px}
+  .over-grade{font-weight:800;font-size:32px;line-height:1;color:#535353}
+  .over-score{font-size:12px;color:#5b6470}
+  .over-coins{font-size:11px;color:#8f959e}
+  .hud-btn{
+    position:absolute;top:7px;right:7px;width:26px;height:26px;padding:0;border-radius:6px;
+    border:1px solid #e0e4e9;background:rgba(255,255,255,.88);color:#535353;font-size:12px;line-height:1;
+    display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2;
+  }
+  .hud-btn.show{display:inline-flex}
+  .hud-btn:hover{background:#fff;border-color:#cfd6de}
+  .hud-manual{right:41px;width:auto;padding:0 7px;font-family:"Cascadia Code",Consolas,monospace;font-size:9px;letter-spacing:.5px;}
+
+  
+  @media(max-width:1160px) { .game-card { right: 20px; } }
+  @media(max-width:860px){ 
+    .layout{flex-direction:column;} 
+    .sidebar{display:none;}
+    .game-card { bottom: 20px; right: 20px; width: 220px; } 
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo" onclick="switchPage('page-home'); return false;">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+      极客视界
+    </a>
+    <div class="nav-links">
+      <a href="#" data-page="page-home" class="active">首页</a>
+      <a href="#" data-page="page-pins">沸点</a>
+      <a href="#" data-page="page-course">课程</a>
+      <a href="#" data-page="page-open">开源</a>
+      <a href="#" data-page="page-rank">排行</a>
+      <a href="#" data-page="page-event">活动</a>
+    </div>
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      搜索文章、标签
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="main-content">
+    <div id="page-home" class="page active">
+      <div class="page-head"><h3>最新文章</h3><span id="homeCount"></span></div>
+      <div id="homeList"></div>
+      <div class="page-head" style="margin-top:28px"><h3>热门专题</h3><span>长期更新</span></div>
+      <div class="grid-2" id="homeTopics"></div>
+    </div>
+
+    <div id="page-article" class="page">
+      <a class="back-btn" id="backHome">← 返回首页</a>
+      <div class="article-detail">
+        <h1 id="article-title">文章标题占位</h1>
+        <div class="meta" id="article-meta"></div>
+        <div id="article-body"></div>
+        <div style="height:120px"></div>
+        <p style="text-align:center;color:#888">（文档已到底部，感谢您的阅读）</p>
+      </div>
+    </div>
+
+    <div id="page-pins" class="page">
+      <div class="page-head"><h3>沸点</h3><span>社区里正在聊的事</span></div>
+      <div id="pinsList"></div>
+    </div>
+
+    <div id="page-course" class="page">
+      <div class="page-head"><h3>课程</h3><span>体系化学习路径</span></div>
+      <div class="grid-2" id="courseList"></div>
+    </div>
+
+    <div id="page-open" class="page">
+      <div class="page-head"><h3>开源</h3><span>值得关注的仓库</span></div>
+      <div class="grid-2" id="openList"></div>
+    </div>
+
+    <div id="page-rank" class="page">
+      <div class="page-head"><h3>本周排行</h3><span>按阅读与互动计算</span></div>
+      <div id="rankList"></div>
+    </div>
+
+    <div id="page-event" class="page">
+      <div class="page-head"><h3>活动日历</h3><span>线上线下同步</span></div>
+      <div id="eventList"></div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="side-box">
+      <div class="side-title">热门推荐</div>
+      <ul class="side-list" id="hotList"></ul>
+    </div>
+    <div class="side-box" style="position:static">
+      <div class="side-title">标签</div>
+      <div class="tags" id="sideTags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Flappy Bird 游戏卡片 -->
+<div class="game-card" id="gameCard" tabindex="0" title="左键开始/暂停 · 滚轮上滑起飞 · Ctrl+滚轮 调透明度 · Ctrl+左键 拖动">
+  <div class="game-head">
+    <span class="title"><span class="dot"></span>像素小鸟</span>
+    <span class="game-score" id="scoreDisplay">HI 00 · 00</span>
+    <div class="coin-display" title="总金币数"><div class="coin-icon"></div> <span id="coinDisplay">0</span></div>
+  </div>
+  <div class="game-wrap">
+    <canvas id="gameCanvas" width="240" height="320" draggable="false"></canvas>
+
+    <div class="screen show" id="screenHome">
+      <div class="home-logo">FLAPPY</div>
+      <div class="home-sub">PIXEL BIRD</div>
+      <button class="btn btn-primary" id="btnFly">FLY!</button>
+      <button class="btn" id="btnRecords">RECORDS</button>
+    </div>
+
+    <div class="screen" id="screenRecords">
+      <div class="panel-title">RECORDS</div>
+      <div class="records" id="recordsBody"></div>
+      <button class="btn btn-sm" id="btnRecordsBack">BACK</button>
+    </div>
+
+    <div class="screen dim" id="screenPaused">
+      <div class="panel-title">PAUSED</div>
+      <button class="btn btn-primary" id="btnResume">RESUME</button>
+      <button class="btn btn-sm" id="btnPauseHome">BACK</button>
+    </div>
+
+    <div class="screen dim" id="screenOver">
+      <div class="panel-title">GAME OVER</div>
+      <div class="over-grade" id="overGrade">F</div>
+      <div class="over-score" id="overScore">得分 0</div>
+      <div class="over-coins" id="overCoins">金币 +0</div>
+      <button class="btn btn-primary" id="btnAgain">AGAIN</button>
+      <button class="btn btn-sm" id="btnOverRecords">RECORDS</button>
+    </div>
+
+    <button class="hud-btn" id="btnPause" title="暂停">⏸</button>
+    <button class="hud-btn hud-manual" id="btnManual" title="回到主页面">MANUAL</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+
+  /* ================= 内容数据 ================= */
+  var ARTICLES = [
+    { title: "分布式系统架构深度指南：从微服务到云原生", author: "极客架构师", time: "1 小时前", read: "12.8w", minutes: 45, tags: ["分布式", "微服务", "云原生"], excerpt: "从 CAP 理论的演化出发，把服务发现、配置中心、网关、链路追踪、熔断降级与容量评估串成一条完整的工程链路。", body: "\n<p>这是一本偏工程实践的技术手册，覆盖现代分布式系统设计的主要环节。阅读前建议先熟悉网络通信、操作系统与常见的数据结构，否则后面关于一致性与共识的推导会非常吃力。</p>\n\n<h2>第一章：单体架构的边界在哪里</h2>\n<p>在业务早期，几乎所有团队都会选择单体架构：一份代码、一个数据库、一次部署。它带来的收益是确定的，开发快、排查简单、事务天然一致。但业务规模一旦上来，问题会以三种形式暴露出来。</p>\n<ul>\n  <li><strong>代码耦合：</strong> 多人同时改同一份代码，冲突与沟通成本呈平方增长，一个小的改动可能触发整站回归。</li>\n  <li><strong>部署耦合：</strong> 任何模块变更都要全量编译发布，回滚粒度是整个应用而不是某个服务。</li>\n  <li><strong>资源耦合：</strong> 只有某个模块吃 CPU，却必须整体扩容，成本被摊到所有模块上。</li>\n</ul>\n<p>微服务的本质是拆解这三种耦合。每个服务围绕一个业务领域构建，拥有独立的数据存储与发布节奏，通过轻量协议交互。拆解之后，故障边界也随之变小，一次发布影响的范围可以精确到单个服务。</p>\n\n<h2>第二章：CAP 与 BASE 的现实取舍</h2>\n<p>CAP 理论指出，一致性、可用性与分区容错性三者不可同时满足。由于网络分区在分布式环境中不可避免，工程上真正要选的是发生分区时保住 C 还是保住 A。</p>\n<p>核心交易链路通常选择 CP：宁可短暂拒绝写入，也不能让账目对不上。非核心的查询、推荐、内容流则倾向 AP，用最终一致换取持续可用。</p>\n<p>BASE 是 AP 的工程化表达：基本可用、软状态、最终一致。它把一致性从「瞬时正确」放宽为「一段时间后正确」，代价是业务方必须接受中间态，并为补偿逻辑买单。</p>\n\n<h2>第三章：共识算法从理论到代码</h2>\n<p>Paxos 的理论门槛极高，Raft 则把共识拆成三个可解释的问题：选主、日志复制、成员变更。工程上绝大多数自研的共识层都基于 Raft 或其变体。</p>\n<pre><code>type Raft struct {\n    mu        sync.Mutex\n    peers     []*labrpc.ClientEnd\n\n    // 持久化状态（所有节点）\n    currentTerm int\n    votedFor    int\n    logs        []LogEntry\n}</code></pre>\n<p>实现时最容易踩的三个坑：一是持久化时机不正确，崩溃后会重放出错误的任期；二是日志压缩与快照没有对齐，恢复时索引错位；三是成员变更与日志复制并发，导致集群脑裂。建议在本地先跑通随机崩溃注入测试，再上真实机器。</p>\n\n<h2>第四章：服务网格与流量治理</h2>\n<p>当服务数量超过三十个，服务发现、负载均衡、灰度发布、限流熔断这些「通用能力」就不该再由每个服务自己实现。服务网格把这些能力下沉到 Sidecar，业务进程只关注逻辑。</p>\n<p>以 Istio 为例，虚拟服务负责路由与超时，目标规则负责负载策略与连接池，熔断与限流通过 Envoy 的过滤器链实现。关键收益是流量治理变成声明式配置，而不是散落在各语言 SDK 里。</p>\n<p>但网格并不免费：一次请求多两跳、故障排查多一层抽象、配置错误的影响面更大。小团队更适合先用网关加统一 SDK，等服务规模真正上来后再引入网格。</p>\n\n<h2>第五章：容量评估与降级预案</h2>\n<p>容量不能拍脑袋。可用的方法是全链路压测：按真实流量模型回放，逐步加压到错误率开始上升，记录此时的 QPS 与 P99，再按 60% 作为线上容量水位。</p>\n<p>降级要提前写好而不是临时决策。常见手段包括：关闭非核心功能、读写分离、缓存兜底、异步化削峰、按用户分级限流。每一档降级都要有明确的触发指标与回滚条件，并在演练中验证过。</p>\n\n<h2>第六章：可观测性与复盘</h2>\n<p>日志回答「发生了什么」，指标回答「系统现在怎么样」，链路追踪回答「这一次请求慢在哪」。三者缺一不可，且必须在同一个 TraceID 体系下串联，否则排障会变成猜测。</p>\n<p>复盘的价值不在追责，而在把一次事故转化为一条可执行的改进项：是缺少熔断、缺少演练、还是缺少监控指标。没有落到具体改动上的复盘，只是故事会。</p>\n" },
+    { title: "深入理解 Chrome V8 的垃圾回收与内存泄漏排查", author: "前端专家", time: "3 小时前", read: "9.6w", minutes: 38, tags: ["JavaScript", "V8引擎", "性能优化"], excerpt: "从新生代 Scavenge 到老生代标记整理，把「为什么我的页面越用越卡」拆成可以验证的步骤。", body: "\n<p>V8 的垃圾回收是前端性能绕不开的话题。理解它的分代假设，比记住任何一条优化技巧都重要：绝大多数对象生命周期极短，只有少数会长期存活。</p>\n\n<h2>第一章：分代假设与两个空间</h2>\n<p>V8 把堆分为新生代与老生代。新生代又分为两个 Semi-Space，新对象默认落在 From 空间。一次 Scavenge 会把 From 中的存活对象复制到 To 空间，然后交换两者身份。</p>\n<p>复制算法的成本只与存活对象数量相关，因此对「朝生夕死」的对象极其高效。缺点是空间利用率只有一半，且存活对象一多，复制成本会迅速上升。</p>\n\n<h2>第二章：对象晋升与老生代</h2>\n<p>存活过一次 Scavenge 的对象，或占用空间过大的对象，会被晋升到老生代。老生代采用标记清除与标记整理：先标记可达对象，再统一回收不可达的，必要时压缩内存以消除碎片。</p>\n<p>标记阶段会打断主线程，造成 Stop-The-World。V8 通过增量标记、惰性清理、并发标记把一次长停顿切成多个短停顿，让页面在这些间隙里继续响应。</p>\n\n<h2>第三章：常见内存泄漏形态</h2>\n<ul>\n  <li><strong>全局引用：</strong> 把大对象挂在 window 或模块级变量上，永远可达。</li>\n  <li><strong>未解绑的监听：</strong> 组件销毁时忘记 removeEventListener，闭包连带整个作用域都无法回收。</li>\n  <li><strong>游离 DOM：</strong> 移除节点后仍被 JS 变量引用，DOM 树与事件系统都留在内存里。</li>\n  <li><strong>定时器与订阅：</strong> 组件卸载后 setInterval 仍在跑，每轮都新建对象。</li>\n</ul>\n\n<h2>第四章：用工具定位而不是猜</h2>\n<p>DevTools 的 Memory 面板提供三种武器：堆快照用于比对对象数量的增量，分配时间线用于定位「在哪里分配」，分配采样用于观察长期趋势。</p>\n<p>标准流程是：先做一次基线快照，复现可疑操作若干次，再取第二次快照，用 Comparison 视图看 Delta。持续增长且 Detached 节点数上升的，基本可以直接判定为泄漏。</p>\n<p>性能优化要落到数字上：强制 GC 后内存是否回落、长任务是否减少、P99 交互延迟是否下降。没有数字的优化，很快会退化成新的技术债。</p>\n" },
+    { title: "Rust 所有权、借用与生命周期：把内存安全写进类型系统", author: "系统工程师", time: "5 小时前", read: "7.2w", minutes: 32, tags: ["Rust", "内存安全", "并发"], excerpt: "所有权不是语法糖，而是一套能在编译期证伪数据竞争的约束系统。", body: "\n<p>Rust 最容易被误解的一点：它不是「没有 GC 的 C++」，而是用类型系统把资源生命周期显式化。理解这套规则，借用检查器就不再是拦路虎。</p>\n\n<h2>第一章：三条基本规则</h2>\n<p>每个值有且只有一个所有者；同一时刻只能有一个所有者；所有者离开作用域时值被丢弃。这三条规则串起来，就把「谁负责释放」这件事在编译期确定下来。</p>\n<p>移动语义是这套规则的直接结果。把一个 String 赋给另一个变量，原变量立即失效，因为所有权被转移了。想保留两份，要么显式 clone，要么改用引用。</p>\n\n<h2>第二章：借用与可变性</h2>\n<p>借用的核心约束是：同一作用域内，要么存在多个不可变引用，要么只存在一个可变引用，二者不可共存。这条规则等价于「读读并发安全，读写与写写互斥」。</p>\n<p>它顺手解决了两个经典问题：迭代器失效与数据竞争。前者在 C++ 里靠人记，后者在多线程里靠人测，在 Rust 里则直接编译不过。</p>\n\n<h2>第三章：生命周期的本质</h2>\n<p>生命周期标注不改变任何运行时行为，它只是在告诉编译器「这个引用的有效期至少和那个一样长」。绝大多数场景编译器能自动推导，需要手写标注的时候，通常是返回值同时引用了多个入参。</p>\n<pre><code>fn longest&lt;'a&gt;(x: &amp;'a str, y: &amp;'a str) -&gt; &amp;'a str {\n    if x.len() &gt; y.len() { x } else { y }\n}</code></pre>\n<p>把生命周期写成显式的，往往意味着函数的设计让调用方难以推理。这时更值得考虑的是调整 API 结构，而不是继续堆标注。</p>\n\n<h2>第四章：并发安全的类型表达</h2>\n<p>Send 表示可以跨线程转移，Sync 表示可以跨线程共享引用。编译器用这两个 trait 检查线程安全，而它们可以被自动推导，也可以在 unsafe 实现中由作者担保。</p>\n<p>配合 Arc 与 Mutex，可以把「共享可变状态」这件危险的事收敛到极少数经过审查的位置。这也是为什么 Rust 服务在长期运行中，数据竞争类故障显著少于同类 C++ 服务。</p>\n" },
+    { title: "手写一个 Raft：分布式 KV 存储的实现细节", author: "分布式小组", time: "8 小时前", read: "6.4w", minutes: 36, tags: ["Raft", "共识算法", "Go"], excerpt: "选主、日志复制、快照与线性一致性读，一次把共识层的坑踩完。", body: "\n<p>读懂 Raft 论文和写出一个能通过测试的 Raft，中间隔着一整套工程细节。这篇笔记按模块记录关键决策点。</p>\n\n<h2>第一章：状态机与角色</h2>\n<p>每个节点在任意时刻处于 Leader、Follower、Candidate 之一。任期（term）单调递增，是判断「谁更新」的唯一依据。任何跨任期的比较都要先比 term，再比 index。</p>\n<p>选主要求心跳超时随机化，这是避免同时竞选导致选票分散的关键。超时区间通常取两倍心跳间隔到三倍之间。</p>\n\n<h2>第二章：日志复制</h2>\n<p>Leader 收到写请求后，先追加本地日志，再并行发送给所有 Follower。多数派确认后提交，并异步落盘。提交索引之前的日志，即使多数派已复制也不能对外可见。</p>\n<p>最容易写错的是「冲突日志截断」：Follower 收到 AppendEntries 后，必须先把与 Leader 冲突的日志截断，再追加新日志，否则会出现日志分叉。</p>\n\n<h2>第三章：快照与日志压缩</h2>\n<p>日志无限增长会耗尽磁盘。快照把某一时刻的状态机序列化落盘，并记录快照包含的最后一条日志索引。重启时先用快照恢复，再重放之后的日志。</p>\n<p>快照与复制的并发是最危险的部分：生成快照期间有新日志写入，必须保证快照内的索引与实际一致，否则恢复后状态机会跳过或重复应用日志。</p>\n\n<h2>第四章：线性一致性读</h2>\n<p>只读请求不能直接返回本地状态：Follower 的数据可能是旧的。两种可行方案是 ReadIndex 与 Lease。前者让 Leader 确认自己仍被多数派承认后再返回，后者依赖时钟租约，对时钟漂移敏感。</p>\n<p>压测时建议同时打开随机杀节点、网络延迟注入与时钟偏移，再检查最终一致性。能在这种环境下跑满 24 小时不出错的实现，才算勉强可用。</p>\n" },
+    { title: "Kubernetes 网络模型拆解：CNI、Service 与 Ingress", author: "云原生笔记", time: "12 小时前", read: "5.8w", minutes: 30, tags: ["K8s", "网络", "云原生"], excerpt: "同一个 Service 名字背后到底发生了什么？把三层转发拆开看。", body: "\n<p>「Pod 为什么能 ping 通另一个 Pod」这个问题，答案不在 K8s 里，而在 CNI 插件里。理解分层，排障才有方向。</p>\n\n<h2>第一章：Pod 网络的约定</h2>\n<p>K8s 的网络模型约定三条：每个 Pod 有独立 IP；同节点 Pod 可直连；跨节点 Pod 可直连且不需要 NAT。满足这三条，应用层就可以像访问本机一样访问其他 Pod。</p>\n<p>实现这些约定的是 CNI 插件。Calico 用 BGP 分发路由，Cilium 用 eBPF 直接在内核里改写转发路径。两者的排障手段完全不同，但对外表现一致。</p>\n\n<h2>第二章：Service 的三层抽象</h2>\n<p>Service 是一个稳定的虚拟地址，Endpoints 是它背后真实的 Pod 列表，kube-proxy 或 eBPF 负责把虚拟地址映射到真实地址。iptables 模式下，每个 Service 都会生成一组规则，规模大了以后规则数量会非常可观。</p>\n<p>ClusterIP 只在集群内可达，NodePort 在每台节点上开一个端口，LoadBalancer 需要云厂商配合。选择哪种，取决于调用方在集群内还是集群外。</p>\n\n<h2>第三章：Ingress 的职责边界</h2>\n<p>Ingress 负责七层路由：按域名与路径把流量分发到不同 Service。它不管负载均衡细节，也不管证书轮换的实现，这些交给 Ingress Controller。</p>\n<p>常见误区是把 Ingress 当成网关的全部。实际上限流、鉴权、灰度、审计通常还需要在 Ingress 之后再加一层网关，或者直接用服务网格承接。</p>\n\n<h2>第四章：排障顺序</h2>\n<ul>\n  <li>先确认 Pod 自身网络：能否解析、能否直连同节点与跨节点。</li>\n  <li>再确认 Service：Endpoints 是否为空、端口名是否匹配。</li>\n  <li>最后确认 Ingress：域名解析、证书、路径重写规则。</li>\n</ul>\n<p>按这个顺序排查，绝大多数「服务不通」的问题能在十分钟内定位到具体一层。</p>\n" },
+    { title: "前端性能优化：把首屏从 3 秒压到 800 毫秒", author: "性能优化组", time: "昨天", read: "11.2w", minutes: 28, tags: ["前端", "性能", "工程化"], excerpt: "一次真实的优化记录：从资源体积、关键路径到渲染阻塞，每一刀都落在指标上。", body: "\n<p>优化不是罗列技巧，而是先建立可度量的基线，再针对瓶颈动刀。这个项目的起点是移动端 4G 环境下首屏 3.1 秒。</p>\n\n<h2>第一章：先量化，再动手</h2>\n<p>用 Lighthouse 与 RUM 双管齐下：实验室数据告诉你理论上限，真实用户数据告诉你实际分布。两者差距往往来自机型、网络与缓存命中率。</p>\n<p>把指标拆成可行动的四项：TTFB、首次内容绘制、最大内容绘制、交互延迟。四项里任何一个掉队，都会拖累整体体感。</p>\n\n<h2>第二章：削掉不必要的字节</h2>\n<p>首屏最大的浪费通常不是图片，而是那些「首屏根本用不到」的 JS。按路由拆包、按交互懒加载、把重型编辑器移到 Web Worker，直接把主包体积砍掉一半。</p>\n<p>图片走现代格式并按容器宽度生成多档尺寸，配上 srcset 与 loading=lazy，流量与解码时间同时下降。</p>\n\n<h2>第三章：关键渲染路径</h2>\n<p>把阻塞渲染的 CSS 内联到头部，其余样式异步加载；把第三方脚本统一改为 defer；字体做子集化并预加载首屏用到的那一档字重。</p>\n<p>服务端渲染或流式渲染可以显著改善首屏体感，但要权衡缓存复杂度与服务端成本。对内容型页面，收益通常大于成本。</p>\n\n<h2>第四章：把优化固化下来</h2>\n<p>性能预算写进 CI：主包超过阈值直接失败，Lighthouse 分数下降超过 5 分阻断合并。没有约束的优化会在三个迭代内被新功能吃掉。</p>\n<p>最终数据：首屏 3.1s 降到 0.8s，交互延迟中位数从 180ms 降到 62ms，是预算机制让这次优化没有反弹。</p>\n" },
+    { title: "数据库索引与慢查询治理手册", author: "数据平台", time: "昨天", read: "8.9w", minutes: 26, tags: ["MySQL", "索引", "优化"], excerpt: "从 B+ 树的物理结构解释「为什么这条 SQL 用不上索引」，再给出可执行的治理流程。", body: "\n<p>慢查询治理的第一步不是加索引，而是搞清楚数据库到底在执行什么计划。EXPLAIN 的每一列都在讲一个决策。</p>\n\n<h2>第一章：B+ 树与索引选择</h2>\n<p>InnoDB 的主键索引是聚簇索引，叶子节点存整行数据；二级索引的叶子存主键值，因此通过二级索引取行需要再回表一次。</p>\n<p>联合索引遵循最左前缀原则。把区分度高、查询频率高的列放在前面，能显著提升可用范围。范围查询之后的列基本失效，这是设计索引时最容易忽略的约束。</p>\n\n<h2>第二章：为什么索引失效</h2>\n<ul>\n  <li>在索引列上做函数运算或类型转换，优化器无法使用该索引。</li>\n  <li>前置模糊匹配，无法利用前缀有序性。</li>\n  <li>统计信息过期，优化器误判成本，选择了错误的执行计划。</li>\n</ul>\n<p>遇到失效先看 EXPLAIN 的 type 与 key，再看 rows 的估算是否离谱。估算偏差往往意味着需要 ANALYZE TABLE。</p>\n\n<h2>第三章：慢查询的治理流程</h2>\n<p>打开慢查询日志并按耗时聚合，先处理「次数多且单次慢」的，再处理「次数少但极慢」的。前者是常态成本，后者是偶发风险。</p>\n<p>常见改造手段：把多次单行更新合并为批量、把深分页改为游标式翻页、把统计类查询下沉到预聚合表。</p>\n\n<h2>第四章：容量与连接</h2>\n<p>连接池不是越大越好。超过数据库合理并发后，更多连接只会增加上下文切换与锁竞争。经验值是按 CPU 核数的两到三倍配置活跃连接。</p>\n<p>读写分离要用在合适的场景：读多写少、且能接受短暂不一致。强一致读仍要回到主库，否则业务会以「偶发数据错乱」的形式付出代价。</p>\n" },
+    { title: "WebAssembly 全景：能力边界与工程落地", author: "编译小组", time: "2 天前", read: "4.7w", minutes: 34, tags: ["WASM", "前端", "性能"], excerpt: "WASM 不是银弹。它擅长什么、不擅长什么，取决于你把哪部分计算搬进去。", body: "\n<p>WebAssembly 的价值在于可预测的性能与跨语言复用，而不是「让网页变快」这句模糊的口号。</p>\n\n<h2>第一章：它到底是什么</h2>\n<p>WASM 是一种可移植的二进制指令格式，不是语言。C、C++、Rust、Go 等语言都能编译到它，再由浏览器或运行时执行。</p>\n<p>它运行在沙箱里，内存是线性内存，边界显式。这让它在安全性上优于直接执行原生代码，也让它与 JS 共享数据需要显式拷贝或共享内存。</p>\n\n<h2>第二章：适合搬进去的能力</h2>\n<p>图像处理、音视频编解码、密码学、物理仿真、规则引擎、轻量级数据库，这些计算密集且状态封闭的模块收益最大。</p>\n<p>不适合的是频繁与 DOM 交互的逻辑：每次跨边界调用都有成本，搬进去反而更慢。</p>\n\n<h2>第三章：与 JS 的协作方式</h2>\n<p>基础方式是导入导出函数，数据通过线性内存传递。进阶方式是 JS Promise 集成、共享内存与多线程，但要处理同步与竞态。</p>\n<p>工程上建议把 WASM 当成一个「带类型的库」：接口尽量窄，数据尽量批量传递，避免一帧内几百次跨边界调用。</p>\n\n<h2>第四章：落地的现实成本</h2>\n<p>体积是首要问题：一个 Rust 模块动辄几百 KB，需要 wasm-opt 与按需加载。调试体验也远不如 JS，source map 支持有限。</p>\n<p>结论：先用 Profiler 证明瓶颈确实在计算，再考虑引入。为了「技术先进」而搬进 WASM，通常换来更长的构建时间和更难的排查。</p>\n" },
+    { title: "大模型推理服务部署：显存、批处理与量化", author: "AI 基础设施", time: "2 天前", read: "9.1w", minutes: 40, tags: ["LLM", "推理", "GPU"], excerpt: "把「一次请求要等 8 秒」优化到 1.2 秒，需要同时处理显存、批处理与调度三件事。", body: "\n<p>推理服务的性能指标不是吞吐或延迟二选一，而是在给定 SLA 下找到最优工作点。</p>\n\n<h2>第一章：显存去哪了</h2>\n<p>模型权重、KV Cache、激活值与临时缓冲共同占用显存。长上下文场景中，KV Cache 往往比权重更吃显存，并且随并发线性增长。</p>\n<p>因此并发不是越高越好。超过显存水位后会发生换页甚至 OOM，延迟曲线会突然断裂。</p>\n\n<h2>第二章：批处理的艺术</h2>\n<p>静态批处理简单但浪费：一个长请求会拖住整批。连续批处理（continuous batching）按 token 步进调度，请求可以随时进出，吞吐提升往往超过一倍。</p>\n<p>配合分页注意力（PagedAttention），KV Cache 按块管理，碎片显著减少，长上下文下的并发能力提升更明显。</p>\n\n<h2>第三章：量化的取舍</h2>\n<p>INT8 与 FP8 在多数模型上几乎无损，是性价比最高的一档。4bit 量化能进一步压缩显存，但对小模型与数学推理任务更敏感，需要针对性评测。</p>\n<p>量化后要做的是分布对比，而不是只看几个样例。用一批真实请求，比较输出长度、拒答率与人工评分，再决定是否上线。</p>\n\n<h2>第四章：调度与降级</p>\n<p>面向用户的服务要有明确的超时与降级路径：超时返回缓存答案、降级到小模型、或直接提示稍后重试。宁可快速失败，也不要让请求在队列里无限等待。</p>\n<p>监控要覆盖四个维度：队列长度、首 token 延迟、每 token 延迟、显存水位。前两个决定体感，后两个决定稳定性。</p>\n" },
+    { title: "可观测性体系：日志、指标、链路的三角平衡", author: "SRE 小组", time: "3 天前", read: "6.1w", minutes: 30, tags: ["可观测性", "监控", "运维"], excerpt: "三者不是三套系统，而是同一份事实的三种视图。", body: "\n<p>可观测性不是把日志、指标、链路各买一套产品，而是让三者在同一个上下文里可关联。</p>\n\n<h2>第一章：日志该记什么</h2>\n<p>结构化日志优于自由文本：字段可检索、可聚合、可接入告警。每条请求至少包含 trace_id、用户分群、关键参数摘要与结果状态。</p>\n<p>日志量要有预算。全量记录请求体会迅速压垮存储，也会带来隐私风险。按采样率与错误优先策略分级记录是更现实的做法。</p>\n\n<h2>第二章：指标的分层</h2>\n<p>指标分三层：资源层（CPU、内存、网络）、服务层（QPS、错误率、延迟分位）、业务层（下单成功率、支付转化）。只看资源层会导致「机器很健康但业务在流血」。</p>\n<p>延迟必须看分位数而不是平均值。平均值会被长尾掩盖，而用户体感恰恰由 P95 与 P99 决定。</p>\n\n<h2>第三章：链路追踪的落地成本</h2>\n<p>全量采样成本高，头部采样会丢掉慢请求。可行方案是尾部采样：只保留慢的与出错的链路，兼顾成本与价值。</p>\n<p>跨语言上下文传播是难点，需要统一的协议头与客户端约定。一旦某一段服务没有透传，链路就会断开，排障价值立刻下降。</p>\n\n<h2>第四章：告警治理</p>\n<p>告警疲劳比没有告警更危险。规则要收敛到「可行动」的指标上，每条告警都必须有明确的处理手册与责任人。</p>\n<p>定期清理长期静默与长期误报的规则。告警系统的健康度，本身就是团队工程成熟度的一面镜子。</p>\n" },
+    { title: "消息队列选型：Kafka、Pulsar 与 RocketMQ 的差异", author: "中间件笔记", time: "3 天前", read: "5.3w", minutes: 24, tags: ["消息队列", "中间件", "架构"], excerpt: "延迟、吞吐、顺序性与运维成本，四个维度决定选型。", body: "\n<p>消息队列的选型很少由「谁性能最好」决定，更多由使用场景的约束决定。</p>\n\n<h2>第一章：三种模型</h2>\n<p>Kafka 以分区日志为核心，靠顺序写与批量发送获得极高吞吐，消费位点由客户端维护，重放能力强。</p>\n<p>Pulsar 采用存储与计算分离，计算层无状态、存储层用 BookKeeper，支持多租户与分层存储，运维复杂度更高。</p>\n<p>RocketMQ 在事务消息、定时消息、顺序消息上做了更贴近业务的设计，适合电商与交易场景。</p>\n\n<h2>第二章：延迟与吞吐</h2>\n<p>三者吞吐都在十万级每秒以上，差异主要体现在长尾延迟与稳定性。对延迟敏感的在线链路，要重点看 P99 而不是平均。</p>\n<p>批量越大吞吐越高但延迟越差，批量参数本质上是在 SLA 上做交易。</p>\n\n<h2>第三章：顺序与事务</h2>\n<p>严格顺序通常以分区为粒度。要做到全局顺序，只能单分区或引入额外的排序层，两者都会限制扩展性。</p>\n<p>事务消息解决的是「本地事务与消息发送」的原子性，需要配合回查机制，且业务必须实现幂等消费。</p>\n\n<h2>第四章：选型建议</h2>\n<p>日志与数据管道优先 Kafka；多租户、需要分层存储与灵活保留策略的选 Pulsar；业务消息、事务与定时能力要求高的选 RocketMQ。</p>\n<p>无论选哪个，消费端都必须做幂等、死信与积压监控。队列只是传输层，可靠性最终由消费方兜底。</p>\n" },
+    { title: "Go 并发模型与 GC 调优笔记", author: "后端小组", time: "4 天前", read: "7.7w", minutes: 26, tags: ["Go", "并发", "性能"], excerpt: "GMP 调度、逃逸分析与 GOGC，把「服务偶发毛刺」拆成可调参数。", body: "\n<p>Go 的并发优势来自 GMP 调度与轻量协程，但「写起来简单」不等于「跑起来稳定」。</p>\n\n<h2>第一章：GMP 调度</h2>\n<p>G 是协程，M 是内核线程，P 是调度上下文。P 的数量默认等于 CPU 核数，每个 P 持有本地运行队列。当本地队列空时，会从其他 P 偷取任务，这就是 work stealing。</p>\n<p>阻塞系统调用会让 M 被占用，运行时会把 P 交给其他 M 继续调度，因此少量阻塞不会拖垮整体。但大量阻塞仍会推高线程数，注意监控。</p>\n\n<h2>第二章：逃逸分析与内存</h2>\n<p>能在栈上分配的对象不会进堆，减少 GC 压力。<code>go build -gcflags=-m</code> 可以看到逃逸决策。</p>\n<p>常见逃逸原因：返回局部变量的指针、被闭包捕获、接口装箱、切片扩容后逃逸到堆。逐个消除收益有限，优先处理高频路径。</p>\n\n<h2>第三章：GC 参数</h2>\n<p>GOGC 控制堆增长的触发比例。调大意味着更少 GC、更高内存；调小则相反。GOMEMLIMIT 可以给堆设上限，让 GC 在接近上限时更积极，是容器环境的关键参数。</p>\n<p>毛刺通常来自短时的分配尖峰。用 <code>GODEBUG=gctrace=1</code> 观察周期，配合 pprof 的 alloc 视图定位热点，比盲调参数有效得多。</p>\n\n<h2>第四章：并发原语的取舍</h2>\n<p>channel 适合传递所有权与编排流程，mutex 适合保护短小的临界区。把 channel 当成万能锁，往往换来更难排查的阻塞。</p>\n<p>上线前建议跑一遍 <code>-race</code>，并用固定并发与随机超时做压测。数据竞争在本地几乎不会出现，但会在线上以最难看的方式出现。</p>\n" }
+  ];
+  var PINS = [
+    { name: "码农老王", time: "12 分钟前", text: "凌晨两点还在追一个线上内存泄漏，最后发现是定时器没清。真想把三年前的自己叫起来 review 一遍。", likes: 36, comments: 11 },
+    { name: "前端小林", time: "40 分钟前", text: "今天把首页图片全换成 AVIF，Lighthouse 直接涨了 12 分。压缩比是真的夸张，就是 Safari 上要留 JPEG 兜底。", likes: 52, comments: 7 },
+    { name: "SRE 阿南", time: "1 小时前", text: "值班最大的心得：告警一定要能落到具体动作。只告诉你「QPS 掉了」的告警，等于没告警。", likes: 68, comments: 19 },
+    { name: "分布式萌新", time: "2 小时前", text: "Raft 的论文看了三遍，自己动手写才发现最难的是日志截断。有没有人一起组个共学小组？", likes: 21, comments: 14 },
+    { name: "Gopher 老陈", time: "3 小时前", text: "GOMEMLIMIT 上线之后，容器的 OOM Kill 基本绝迹了。建议所有跑在容器里的 Go 服务都配一下。", likes: 94, comments: 23 },
+    { name: "数据平台小周", time: "4 小时前", text: "慢查询治理的第一周：TOP10 里有 7 条是深分页。改成游标翻页之后，数据库负载直接掉了一半。", likes: 41, comments: 9 },
+    { name: "菜鸟设计师", time: "5 小时前", text: "做后台系统三年，最深的体会是：能删掉的功能，比能加的功能值钱得多。", likes: 120, comments: 31 },
+    { name: "K8s 布道者", time: "8 小时前", text: "今天被问到「Service 和 Ingress 到底有什么区别」。一句话：Service 解决「找得到」，Ingress 解决「进得来」。", likes: 77, comments: 18 },
+    { name: "Rust 信徒", time: "10 小时前", text: "借用检查器第三次拦下我写的悬垂引用。虽然被骂，但是真的省了一次线上事故。", likes: 88, comments: 12 },
+    { name: "性能老兵", time: "昨天", text: "做优化十年，唯一始终有效的办法是：先测，再改，再测。跳过第一步的优化，都是在给自己写技术债。", likes: 156, comments: 40 }
+  ];
+  var COURSES = [
+    { title: "React 18 源码剖析实战", sub: "从 Fiber 架构到并发特性，逐行拆解核心实现", price: "¥399", meta: "42 节 · 12 小时" },
+    { title: "分布式系统设计训练营", sub: "六个真实系统案例，从需求到容量评估完整走一遍", price: "¥599", meta: "36 节 · 18 小时" },
+    { title: "Rust 工程化入门", sub: "所有权、异步、错误处理与生产部署", price: "¥349", meta: "30 节 · 9 小时" },
+    { title: "数据库内核 30 讲", sub: "从 B+ 树到事务隔离，理解存储引擎如何工作", price: "¥459", meta: "30 节 · 15 小时" },
+    { title: "可观测性工程实战", sub: "日志、指标、链路三件套的落地与治理", price: "¥299", meta: "24 节 · 8 小时" },
+    { title: "WebAssembly 编译器实践", sub: "从 LLVM IR 到 wasm 模块的完整链路", price: "¥529", meta: "28 节 · 14 小时" }
+  ];
+  var OPENSRC = [
+    { name: "lumen/kv", sub: "基于 Raft 的轻量分布式 KV，单二进制部署", meta: "Go · 8.2k stars" },
+    { name: "pixel-ui", sub: "像素风设计系统，支持多端主题定制", meta: "TypeScript · 5.6k stars" },
+    { name: "trace-lite", sub: "低开销的链路追踪 SDK，支持尾部采样", meta: "Rust · 3.1k stars" },
+    { name: "sql-lens", sub: "SQL 执行计划可视化与慢查询归因工具", meta: "Python · 2.4k stars" },
+    { name: "wasm-image", sub: "浏览器端图像处理工具链，纯 WASM 实现", meta: "C++ · 6.8k stars" },
+    { name: "k8s-top", sub: "终端里的集群资源看板，零依赖", meta: "Go · 4.3k stars" },
+    { name: "edge-cron", sub: "面向边缘节点的分布式定时任务调度器", meta: "Java · 1.9k stars" },
+    { name: "notes-engine", sub: "本地优先的笔记引擎，支持冲突合并", meta: "Rust · 2.7k stars" }
+  ];
+  var RANKS = [
+    { title: "分布式系统架构深度指南：从微服务到云原生", sub: "极客架构师 · 收藏 2.1w", val: "12.8w" },
+    { title: "前端性能优化：把首屏从 3 秒压到 800 毫秒", sub: "性能优化组 · 收藏 1.7w", val: "11.2w" },
+    { title: "深入理解 Chrome V8 的垃圾回收与内存泄漏排查", sub: "前端专家 · 收藏 1.4w", val: "9.6w" },
+    { title: "大模型推理服务部署：显存、批处理与量化", sub: "AI 基础设施 · 收藏 1.2w", val: "9.1w" },
+    { title: "数据库索引与慢查询治理手册", sub: "数据平台 · 收藏 9.8k", val: "8.9w" },
+    { title: "Go 并发模型与 GC 调优笔记", sub: "后端小组 · 收藏 8.6k", val: "7.7w" },
+    { title: "Rust 所有权、借用与生命周期", sub: "系统工程师 · 收藏 7.9k", val: "7.2w" },
+    { title: "手写一个 Raft：分布式 KV 存储的实现细节", sub: "分布式小组 · 收藏 7.1k", val: "6.4w" },
+    { title: "可观测性体系：日志、指标、链路的三角平衡", sub: "SRE 小组 · 收藏 6.5k", val: "6.1w" },
+    { title: "Kubernetes 网络模型拆解：CNI、Service 与 Ingress", sub: "云原生笔记 · 收藏 6.2k", val: "5.8w" }
+  ];
+  var EVENTS = [
+    { date: "12.05", week: "周五 19:30", title: "线上故障复盘公开课：一次雪崩是怎么发生的", desc: "从监控告警到根因定位，完整复盘一次真实事故，并现场演示降级预案的正确写法。" },
+    { date: "12.12", week: "周五 20:00", title: "分布式共学营第一讲：从零理解 Raft", desc: "带你手写选主与日志复制，配套测试用例与压测脚本，课后有作业与 Code Review。" },
+    { date: "12.19", week: "周五 19:30", title: "前端性能工作坊：把首屏压进一秒", desc: "现场拿到一份真实项目代码，逐项改造资源加载、渲染阻塞与缓存策略。" },
+    { date: "12.26", week: "周五 20:00", title: "数据库内核夜谈：索引为什么失效", desc: "围绕 EXPLAIN 输出逐列讲解优化器决策，并现场调优三条典型慢查询。" },
+    { date: "01.09", week: "周五 19:30", title: "开源项目路演夜：八个值得 star 的仓库", desc: "作者亲自讲设计取舍与踩坑，现场答疑，适合想找练手项目的同学。" },
+    { date: "01.16", week: "周五 20:00", title: "年度技术盘点：这一年真正改变工程实践的事", desc: "从构建工具、运行时到 AI 辅助编程，聊聊哪些变化值得跟进，哪些只是噪音。" }
+  ];
+
+  var currentArticleIdx = -1;
+  var PAGE_NAV = { 'page-home': 0, 'page-pins': 1, 'page-course': 2, 'page-open': 3, 'page-rank': 4, 'page-event': 5 };
+
+  function tagsHtml(tags) {
+    var out = '';
+    for (var i = 0; i < tags.length; i++) out += '<span>' + tags[i] + '</span>';
+    return out;
+  }
+
+  /* ================= 各页渲染 ================= */
+  function renderHome() {
+    var html = '';
+    for (var i = 0; i < ARTICLES.length; i++) {
+      var a = ARTICLES[i];
+      html += '<div class="article-card" data-idx="' + i + '"><div class="info">' +
+        '<h2><a>' + a.title + '</a></h2>' +
+        '<p>' + a.excerpt + '</p>' +
+        '<div class="meta"><div class="tags">' + tagsHtml(a.tags) + '</div>' +
+        '<div class="author"><div class="avatar"></div> ' + a.author + ' · ' + a.time + '</div></div>' +
+        '</div></div>';
+    }
+    document.getElementById('homeList').innerHTML = html;
+    document.getElementById('homeCount').textContent = '共 ' + ARTICLES.length + ' 篇 · 每周更新';
+
+    var topics = [
+      { t: '分布式系统专题', s: '共识、容量与降级，12 篇实战笔记', i: 0 },
+      { t: '前端性能专题', s: '从指标到预算，把优化固化下来', i: 5 },
+      { t: '数据与存储专题', s: '索引、事务与慢查询治理', i: 6 },
+      { t: 'AI 基础设施专题', s: '显存、批处理与量化取舍', i: 8 }
+    ];
+    var th = '';
+    for (var k = 0; k < topics.length; k++) {
+      var x = topics[k];
+      th += '<div class="mini-card" data-idx="' + x.i + '"><div class="mini-cover"></div>' +
+        '<div class="mini-title">' + x.t + '</div><div class="mini-sub">' + x.s + '</div></div>';
+    }
+    document.getElementById('homeTopics').innerHTML = th;
+  }
+
+  function renderPins() {
+    var html = '';
+    for (var i = 0; i < PINS.length; i++) {
+      var p = PINS[i];
+      html += '<div class="pin-card">' +
+        '<div class="pin-head"><div class="avatar"></div><span>' + p.name + '</span><span>·</span><span>' + p.time + '</span></div>' +
+        '<p>' + p.text + '</p>' +
+        '<div class="pin-actions"><span>赞 ' + p.likes + '</span><span>评论 ' + p.comments + '</span><span>分享</span></div>' +
+        '</div>';
+    }
+    document.getElementById('pinsList').innerHTML = html;
+  }
+
+  function renderCourses() {
+    var html = '';
+    for (var i = 0; i < COURSES.length; i++) {
+      var c = COURSES[i];
+      html += '<div class="mini-card"><div class="mini-cover"></div>' +
+        '<div class="mini-title">' + c.title + '</div>' +
+        '<div class="mini-sub">' + c.sub + '</div>' +
+        '<div class="mini-sub">' + c.meta + '</div>' +
+        '<div class="mini-price">' + c.price + '</div></div>';
+    }
+    document.getElementById('courseList').innerHTML = html;
+  }
+
+  function renderOpen() {
+    var html = '';
+    for (var i = 0; i < OPENSRC.length; i++) {
+      var o = OPENSRC[i];
+      html += '<div class="mini-card"><div class="mini-title">' + o.name + '</div>' +
+        '<div class="mini-sub">' + o.sub + '</div>' +
+        '<div class="mini-sub">' + o.meta + '</div></div>';
+    }
+    document.getElementById('openList').innerHTML = html;
+  }
+
+  function renderRank() {
+    var html = '';
+    for (var i = 0; i < RANKS.length; i++) {
+      var r = RANKS[i];
+      html += '<div class="rank-row"><div class="rank-no">' + (i + 1) + '</div>' +
+        '<div class="rank-main"><h4>' + r.title + '</h4><div class="sub">' + r.sub + '</div></div>' +
+        '<div class="rank-val">' + r.val + '</div></div>';
+    }
+    document.getElementById('rankList').innerHTML = html;
+  }
+
+  function renderEvents() {
+    var html = '';
+    for (var i = 0; i < EVENTS.length; i++) {
+      var e = EVENTS[i];
+      html += '<div class="event-card"><div class="event-date"><b>' + e.date + '</b><span>' + e.week + '</span></div>' +
+        '<div class="event-body"><h4>' + e.title + '</h4><p>' + e.desc + '</p></div></div>';
+    }
+    document.getElementById('eventList').innerHTML = html;
+  }
+
+  function renderSidebar() {
+    var hot = '';
+    for (var i = 0; i < 5 && i < ARTICLES.length; i++) {
+      hot += '<li><h4><a data-idx="' + i + '">' + ARTICLES[i].title + '</a></h4>' +
+        '<div class="sub">' + ARTICLES[i].read + ' 阅读 · ' + ARTICLES[i].time + '</div></li>';
+    }
+    document.getElementById('hotList').innerHTML = hot;
+
+    var seen = {}, tags = [];
+    for (var j = 0; j < ARTICLES.length; j++) {
+      for (var k = 0; k < ARTICLES[j].tags.length; k++) {
+        var t = ARTICLES[j].tags[k];
+        if (!seen[t]) { seen[t] = 1; tags.push('<span>' + t + '</span>'); }
+      }
+    }
+    document.getElementById('sideTags').innerHTML = tags.slice(0, 12).join('');
+  }
+
+  /* ================= 页面路由 ================= */
+  function switchPage(pageId) {
+    var pages = document.querySelectorAll('.page');
+    for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+    var target = document.getElementById(pageId);
+    if (target) target.classList.add('active');
+
+    var navs = document.querySelectorAll('.nav-links a');
+    for (var n = 0; n < navs.length; n++) navs[n].classList.remove('active');
+    var idx = PAGE_NAV.hasOwnProperty(pageId) ? PAGE_NAV[pageId] : 0;
+    if (navs[idx]) navs[idx].classList.add('active');
+
+    window.scrollTo(0, 0);
+    scheduleRotate();
+  }
+
+  function openArticle(idx) {
+    var a = ARTICLES[idx];
+    if (!a) return;
+    currentArticleIdx = idx;
+    document.getElementById('article-title').textContent = a.title;
+    document.getElementById('article-meta').innerHTML =
+      '<div class="author"><div class="avatar"></div> ' + a.author + ' · 阅读量 ' + a.read + ' · 预计阅读 ' + a.minutes + ' 分钟</div>' +
+      '<div class="tags">' + tagsHtml(a.tags) + '</div>';
+    document.getElementById('article-body').innerHTML = a.body;
+    switchPage('page-article');
+  }
+
+  window.switchPage = switchPage;
+  window.openArticle = openArticle;
+
+  /* ================= 自动随机跳转（10~30 秒） ================= */
+  var rotateTimer = null;
+  var ROTATE_MIN = 10000, ROTATE_MAX = 30000;
+
+  function currentKey() {
+    var active = document.querySelector('.page.active');
+    if (!active) return '';
+    if (active.id === 'page-article' && currentArticleIdx >= 0) return 'article:' + currentArticleIdx;
+    return active.id;
+  }
+
+  function rotatePool() {
+    var pool = ['page-home', 'page-pins', 'page-course', 'page-open', 'page-rank', 'page-event'];
+    for (var i = 0; i < ARTICLES.length; i++) pool.push('article:' + i);
+    return pool;
+  }
+
+  function scheduleRotate() {
+    if (rotateTimer) clearTimeout(rotateTimer);
+    rotateTimer = setTimeout(rotateStep, ROTATE_MIN + Math.random() * (ROTATE_MAX - ROTATE_MIN));
+  }
+
+  function rotateStep() {
+    rotateTimer = null;
+    var pool = rotatePool();
+    var cur = currentKey();
+    var avail = [];
+    for (var i = 0; i < pool.length; i++) if (pool[i] !== cur) avail.push(pool[i]);
+    var next = avail[Math.floor(Math.random() * avail.length)];
+    if (!next) { scheduleRotate(); return; }
+    if (next.indexOf('article:') === 0) {
+      openArticle(parseInt(next.split(':')[1], 10));
+    } else {
+      switchPage(next);
+    }
+  }
+
+  /* ================= 事件绑定 ================= */
+  document.addEventListener('DOMContentLoaded', function () {});
+  (function bindSite() {
+    renderHome(); renderPins(); renderCourses(); renderOpen(); renderRank(); renderEvents(); renderSidebar();
+
+    var navs = document.querySelectorAll('.nav-links a');
+    for (var i = 0; i < navs.length; i++) {
+      navs[i].addEventListener('click', function (e) {
+        e.preventDefault();
+        switchPage(this.getAttribute('data-page'));
+      });
+    }
+
+    document.getElementById('homeList').addEventListener('click', function (e) {
+      var card = e.target.closest ? e.target.closest('.article-card') : null;
+      if (card) openArticle(parseInt(card.getAttribute('data-idx'), 10));
+    });
+    document.getElementById('homeTopics').addEventListener('click', function (e) {
+      var card = e.target.closest ? e.target.closest('.mini-card') : null;
+      if (card) openArticle(parseInt(card.getAttribute('data-idx'), 10));
+    });
+    document.getElementById('hotList').addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('a[data-idx]') : null;
+      if (a) openArticle(parseInt(a.getAttribute('data-idx'), 10));
+    });
+    document.getElementById('backHome').addEventListener('click', function (e) {
+      e.preventDefault();
+      switchPage('page-home');
+    });
+
+    switchPage('page-home');
+  })();
+
+  /* ================= Flappy Bird 核心逻辑 ================= */
+  var canvas = document.getElementById('gameCanvas');
+  var ctx = canvas.getContext('2d');
+  var card = document.getElementById('gameCard');
+  var scoreEl = document.getElementById('scoreDisplay');
+  var coinEl = document.getElementById('coinDisplay');
+
+  var screenHome = document.getElementById('screenHome');
+  var screenRecords = document.getElementById('screenRecords');
+  var screenPaused = document.getElementById('screenPaused');
+  var screenOver = document.getElementById('screenOver');
+  var recordsBody = document.getElementById('recordsBody');
+  var overGrade = document.getElementById('overGrade');
+  var overScore = document.getElementById('overScore');
+  var overCoins = document.getElementById('overCoins');
+  var btnPause = document.getElementById('btnPause');
+  var btnManual = document.getElementById('btnManual');
+
+  var W = 240, H = 320;
+  var GROUND_Y = H - 40;
+
+  var gameState = 'home';
+  var score = 0, runCoins = 0, frameCount = 0, bgScroll = 0;
+  var travelled = 0;      // 本局已飞行的水平距离(px)，用于按距离生成障碍
+  var firstDelay = 300;   // 第一根障碍出现前的距离
+
+  // 撞击镜头：顿帧 + 沿撞击速度方向的矢量回弹（橡皮筋）
+  var camX = 0, camY = 0;          // 世界位移
+  var camDirX = -1, camDirY = 0;   // 回弹方向（单位向量）
+  var camAmp = 12;                 // 最大位移(px)
+  var camHitFrame = -1;
+  var CAM_HITSTOP = 4;             // 顿帧（约 67ms，成熟动作游戏常见 50~100ms）
+  var CAM_STRETCH = 8;             // 前进拉伸（约 133ms）
+  var CAM_REBOUND = 8;             // 回弹（约 133ms，含 12% 过冲）
+  var overScreenPending = false;   // 等回弹结束后再弹出结算面板
+  var overDelay = 0;               // 结算面板额外延迟帧数
+
+  // 撞击爆浆特效
+  // 扇翅（起飞）反馈
+  var flapAnim = 0;                // 挤压拉伸进度 0~1
+  var kick = 0, kickV = 0;         // 镜头下沉（弹性）
+  var zoomAnim = 0;                // 缩放冲击
+  var shakeT = 0;                  // 微抖帧数
+  var ghosts = [];                 // 残影
+  var speedLines = [];             // 速度线
+
+  var particles = [];              // 碎块粒子
+  var splat = null;                // 浆体斑块
+  var flashT = -1;                 // 冲击闪光进度
+  var birdDead = false;            // 小鸟已爆成浆
+
+  // 排行榜与金币数据
+  var leaderboard = JSON.parse(localStorage.getItem('flappyLeaderboard')) || [];
+  var highScore = leaderboard.length > 0 ? leaderboard[0] : 0;
+  var totalCoins = parseInt(localStorage.getItem('flappyTotalCoins')) || 0;
+
+  var GRAVITY = 0.35;
+  var JUMP_FORCE = -5.5;
+  var PIPE_SPEED = 2.5;
+  var PIPE_GAP = 110;
+
+  var bird = { x: 60, y: H / 2, vy: 0, radius: 10, rotation: 0 };
+  var pipes = [];
+
+  var RATINGS = ['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SS', 'SSS+'];
+  var gradeTimer = null;
+
+  var BIRD_UP = [
+    "000011000000", "000111100000", "001111111100", "111111111110",
+    "111111111100", "001111111000", "000111100000"
+  ];
+  var BIRD_DOWN = [
+    "000011000000", "000111100000", "001111111100", "111111111110",
+    "001111111100", "000111111000", "000011110000"
+  ];
+
+  function updateScoreUI() {
+    scoreEl.textContent = 'HI ' + String(highScore).padStart(2, '0') + ' · ' + String(score).padStart(2, '0');
+    coinEl.textContent = totalCoins;
+  }
+
+  function getRatingIndex(s) {
+    if (s < 5) return 0;
+    if (s < 10) return 1;
+    if (s < 20) return 2;
+    if (s < 30) return 3;
+    if (s < 40) return 4;
+    if (s < 50) return 5;
+    if (s < 70) return 6;
+    if (s < 90) return 7;
+    return 8;
+  }
+
+  /* ================= 界面切换 ================= */
+  function setScreen(name) {
+    screenHome.classList.toggle('show', name === 'home');
+    screenRecords.classList.toggle('show', name === 'records');
+    screenPaused.classList.toggle('show', name === 'paused');
+    screenOver.classList.toggle('show', name === 'over');
+  }
+
+  function setHud(show) {
+    btnPause.classList.toggle('show', !!show);
+    btnManual.classList.toggle('show', !!show);
+  }
+
+  function resetCamera() {
+    camX = 0; camY = 0;
+    camHitFrame = -1;
+  }
+
+  function resetBurst() {
+    particles.length = 0;
+    flapAnim = 0; kick = 0; kickV = 0; zoomAnim = 0; shakeT = 0;
+    ghosts.length = 0; speedLines.length = 0;
+    splat = null;
+    flashT = -1;
+    birdDead = false;
+    overDelay = 0;
+  }
+
+  function goHome() {
+    gameState = 'home';
+    resetCamera();
+    resetBurst();
+    overScreenPending = false;
+    score = 0; runCoins = 0; pipes = []; frameCount = 0;
+    bird.y = H / 2; bird.vy = 0; bird.rotation = 0;
+    setScreen('home'); setHud(false);
+    updateScoreUI();
+  }
+
+  function startGame() {
+    gameState = 'playing';
+    resetCamera();
+    resetBurst();
+    overScreenPending = false;
+    travelled = 0;
+    firstDelay = 300 + Math.random() * 90;
+    score = 0; runCoins = 0; pipes = []; frameCount = 0;
+    bird.y = H / 2; bird.vy = JUMP_FORCE; bird.rotation = 0;
+    setScreen(null); setHud(true);
+    playJumpSound();
+    flapFx();
+    updateScoreUI();
+  }
+
+  function pauseGame() {
+    if (gameState !== 'playing') return;
+    gameState = 'paused';
+    setScreen('paused'); setHud(false);
+  }
+
+  function resumeGame() {
+    if (gameState !== 'paused') return;
+    gameState = 'playing';
+    setScreen(null); setHud(true);
+  }
+
+  function openRecords() {
+    renderRecords();
+    gameState = 'records';
+    setScreen('records'); setHud(false);
+  }
+
+  function renderRecords() {
+    var html = '';
+    if (leaderboard.length === 0) {
+      html = '<div class="empty">还没有飞行记录</div>';
+    } else {
+      for (var i = 0; i < leaderboard.length; i++) {
+        html += '<div class="row"><span>#' + (i + 1) + '</span><span>' +
+                RATINGS[getRatingIndex(leaderboard[i])] + '</span><span>' +
+                leaderboard[i] + '</span></div>';
+      }
+    }
+    html += '<div class="row sum"><span>总金币 ' + totalCoins + '</span><span>最高 ' + highScore + '</span></div>';
+    recordsBody.innerHTML = html;
+  }
+
+  /* ================= 音效 ================= */
+  function onFlap() {
+    bird.vy = JUMP_FORCE;
+    playJumpSound();
+    flapFx();
+  }
+
+  // 扇翅视觉反馈：挤压拉伸 / 镜头冲击 / 缩放 / 微抖 / 风屑 / 残影 / 速度线
+  function flapFx() {
+    flapAnim = 1;
+    kickV += 2.4;          // 世界瞬间下沉
+    zoomAnim = 1;
+    shakeT = 3;
+
+    spawnFlapDust(bird.x, bird.y);
+
+    ghosts.push({ x: bird.x, y: bird.y, rot: bird.rotation, life: 14, max: 14 });
+    if (ghosts.length > 3) ghosts.shift();
+
+    for (var i = 0; i < 2; i++) {
+      speedLines.push({
+        x: bird.x + (i === 0 ? -10 : 11) + (Math.random() - 0.5) * 3,
+        y: bird.y + 3,
+        len: 12 + Math.random() * 9,
+        t: 0,
+        ttl: 9 + Math.floor(Math.random() * 4)
+      });
+    }
+  }
+
+  function spawnFlapDust(x, y) {
+    for (var i = 0; i < 4; i++) {
+      var p = {
+        x: x + (Math.random() - 0.5) * 8,
+        y: y + 6 + Math.random() * 4,
+        vx: -0.5 - Math.random() * 1.2,
+        vy: 0.5 + Math.random() * 0.9,
+        size: Math.random() < 0.5 ? 1 : 2,
+        life: 12 + Math.floor(Math.random() * 8),
+        maxLife: 0,
+        shade: Math.random() < 0.5 ? '#c9cdd2' : '#9a9a9a'
+      };
+      p.maxLife = p.life;
+      particles.push(p);
+    }
+  }
+
+  function updateFlapFx() {
+    if (flapAnim > 0) flapAnim = Math.max(0, flapAnim - 0.13);
+    if (zoomAnim > 0) zoomAnim = Math.max(0, zoomAnim - 0.10);
+    if (shakeT > 0) shakeT--;
+
+    kick += kickV;
+    kickV += -0.30 * kick - 0.50 * kickV;
+    if (Math.abs(kick) < 0.06 && Math.abs(kickV) < 0.06) { kick = 0; kickV = 0; }
+    if (kick > 4) kick = 4;
+    if (kick < -4) kick = -4;
+
+    for (var i = ghosts.length - 1; i >= 0; i--) {
+      ghosts[i].life--;
+      if (ghosts[i].life <= 0) ghosts.splice(i, 1);
+    }
+
+    for (var j = speedLines.length - 1; j >= 0; j--) {
+      var l = speedLines[j];
+      l.t++;
+      l.y -= 1.2;
+      if (l.t >= l.ttl) speedLines.splice(j, 1);
+    }
+
+    updateParticles();
+  }
+
+  function playJumpSound() {
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      var osc = ac.createOscillator(), gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(400, ac.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, ac.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.05, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.1);
+      osc.start(ac.currentTime); osc.stop(ac.currentTime + 0.1);
+    } catch (e) {}
+  }
+
+  function playCoinSound() {
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      var osc = ac.createOscillator(), gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(800, ac.currentTime);
+      osc.frequency.setValueAtTime(1200, ac.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.05, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.15);
+      osc.start(ac.currentTime); osc.stop(ac.currentTime + 0.15);
+    } catch (e) {}
+  }
+
+  function playHitSound() {
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      var size = Math.floor(ac.sampleRate * 0.15);
+      var buffer = ac.createBuffer(1, size, ac.sampleRate);
+      var data = buffer.getChannelData(0);
+      for (var i = 0; i < size; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / size);
+      var src = ac.createBufferSource(); src.buffer = buffer;
+      var gain = ac.createGain();
+      src.connect(gain); gain.connect(ac.destination);
+      gain.gain.setValueAtTime(0.1, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.15);
+      src.start();
+    } catch (e) {}
+  }
+
+  /* ================= 按钮交互 ================= */
+  function onBtn(el, fn) {
+    el.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+    el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fn(); });
+  }
+  onBtn(document.getElementById('btnFly'), startGame);
+  onBtn(document.getElementById('btnRecords'), openRecords);
+  onBtn(document.getElementById('btnRecordsBack'), goHome);
+  onBtn(document.getElementById('btnResume'), resumeGame);
+  onBtn(document.getElementById('btnPauseHome'), goHome);
+  onBtn(document.getElementById('btnAgain'), startGame);
+  onBtn(document.getElementById('btnOverRecords'), openRecords);
+  onBtn(btnPause, pauseGame);
+  onBtn(btnManual, goHome);
+
+  /* ================= 交互控制（快捷键保留） ================= */
+  card.addEventListener('mousedown', function (e) {
+    if (e.ctrlKey) return;
+    if (e.button !== 0) return;
+    if (e.target && e.target.closest && e.target.closest('button')) return;
+    e.preventDefault();
+
+    if (gameState === 'home') {
+      startGame();
+    } else if (gameState === 'playing') {
+      pauseGame();
+    } else if (gameState === 'paused') {
+      resumeGame();
+    } else if (gameState === 'gameover') {
+      startGame();
+    }
+  });
+
+  // Ctrl + 上下滚轮：窗口不透明度在 0.04 ~ 0.08 之间调节
+  var cardAlpha = 0.048;
+  var ALPHA_MIN = 0.04, ALPHA_MAX = 0.08, ALPHA_STEP = 0.005;
+  card.style.setProperty('--card-alpha', cardAlpha.toFixed(3));
+
+  card.addEventListener('wheel', function (e) {
+    e.preventDefault();
+
+    if (e.ctrlKey) {
+      var dir = e.deltaY < 0 ? 1 : -1;
+      cardAlpha = Math.min(ALPHA_MAX, Math.max(ALPHA_MIN, cardAlpha + dir * ALPHA_STEP));
+      card.style.setProperty('--card-alpha', cardAlpha.toFixed(3));
+      return;
+    }
+
+    if (gameState !== 'playing') return;
+    if (e.deltaY < 0) {
+      onFlap();
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+    if (gameState === 'playing') {
+      onFlap();
+    } else if (gameState === 'home' || gameState === 'gameover') {
+      startGame();
+    } else if (gameState === 'paused') {
+      resumeGame();
+    }
+  }, { passive: false });
+
+  card.addEventListener('blur', function () {
+    if (gameState === 'playing') {
+      gameState = 'paused';
+      setScreen('paused'); setHud(false);
+    }
+  });
+
+  /* ================= 核心逻辑 ================= */
+  // 相邻障碍的水平间距：随分数收紧基准，但每根都有随机浮动
+  function getSpawnSpacing() {
+    var ease = Math.min(45, Math.floor(score / 10) * 5);   // 难度收紧量 0 → 45
+    var base = 265 - ease;                                 // 基准 265 → 220
+    var lo = 205 - ease;                                   // 下限 205 → 160
+    var hi = 315 - ease;                                   // 上限 315 → 270
+    var s = base + (Math.random() - 0.5) * 70;             // 基准上下浮动 ±35
+    s = Math.max(lo, Math.min(hi, s));
+    return Math.round(s);
+  }
+
+  // 按距离生成：保证不会出现两根水管叠在一起
+  function maybeSpawnPipe() {
+    if (pipes.length === 0) {
+      if (travelled >= firstDelay) spawnPipe();   // 开局延迟也带随机浮动
+      return;
+    }
+    // 间距在生成时就定好，避免每帧重算随机值导致节奏抖动
+    var last = pipes[pipes.length - 1];
+    if (last.x <= W - (last.nextGap || 220)) spawnPipe();
+  }
+
+  function spawnPipe() {
+    // 水管概率 5/6，电线杆概率 1/6
+    var isPipe = Math.random() < (5 / 6);
+    var width = isPipe ? 40 : 20;
+
+    if (isPipe) {
+      var margin = 10;
+      var minHeight = margin;
+      var maxHeight = (H - 40) - PIPE_GAP - margin;
+      var topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+
+      // 每一根水管的正中间都有金币
+      var centerY = topHeight + PIPE_GAP / 2;
+
+      pipes.push({
+        x: W, topH: topHeight, bottomY: topHeight + PIPE_GAP, width: width, type: 'pipe', passed: false,
+        coin: { y: centerY, collected: false }, nextGap: getSpawnSpacing()
+      });
+    } else {
+      // 电线杆高矮大幅浮动：杆顶在画面偏上到偏下之间变化，但始终留出小鸟通过的通道
+      var poleHeight = 40 + Math.random() * 150;   // 40 ~ 190
+      var bottomY = H - 40 - poleHeight;           // 杆顶 90 ~ 240，既不越出上边界也不压到地面
+      // 电线杆不出金币，金币只出现在水管上
+      pipes.push({
+        x: W, topH: 0, bottomY: bottomY, width: width, type: 'pole', passed: false, coin: null,
+        nextGap: getSpawnSpacing()
+      });
+    }
+  }
+
+  function update() {
+    frameCount++;
+
+    if (gameState === 'playing') {
+      bgScroll += PIPE_SPEED;
+      updateFlapFx();
+    } else if (gameState === 'home' || gameState === 'records') {
+      bgScroll += 1.1;
+      if (gameState === 'home') {
+        bird.y = H / 2 + Math.sin(frameCount / 22) * 8;
+        bird.rotation = Math.sin(frameCount / 22) * 0.08;
+      }
+    }
+
+    if (gameState === 'gameover' && camHitFrame >= 0) {
+      camHitFrame++;
+      var f = camHitFrame;
+      var scale = 0;
+
+      if (f <= CAM_HITSTOP) {
+        // 顿帧：画面与小鸟都定住，制造打击感
+        scale = 0;
+      } else if (f <= CAM_HITSTOP + CAM_STRETCH) {
+        // 沿撞击方向被“拉”出去：起步快、末速归零
+        var sp = (f - CAM_HITSTOP) / CAM_STRETCH;
+        scale = 1 - (1 - sp) * (1 - sp);
+      } else if (f <= CAM_HITSTOP + CAM_STRETCH + CAM_REBOUND) {
+        // 橡皮筋回弹：easeOutBack，尾部约 12% 反向过冲再归位
+        var ru = (f - CAM_HITSTOP - CAM_STRETCH) / CAM_REBOUND;
+        var c1 = 1.70158, c3 = c1 + 1;
+        var p1 = ru - 1;
+        var back = 1 + c3 * p1 * p1 * p1 + c1 * p1 * p1;
+        scale = 1 - back;
+      } else {
+        scale = 0;
+        camHitFrame = -1;
+        overDelay = 10;   // 回弹结束后再留 ~0.17s 让爆浆碎块飞一会儿
+      }
+
+      // 位移 = -撞击方向 × 力度 × 进度（世界被拉向小鸟的前进方向）
+      camX = -camDirX * camAmp * scale;
+      camY = -camDirY * camAmp * scale;
+    }
+
+    if (gameState === 'gameover') {
+      updateBurst();
+      if (overDelay > 0) {
+        overDelay--;
+        if (overDelay === 0 && overScreenPending) {
+          overScreenPending = false;
+          setScreen('over');
+        }
+      }
+    }
+
+    if (gameState !== 'playing') return;
+
+    bird.vy += GRAVITY;
+    bird.y += bird.vy;
+
+    if (bird.vy < 0) {
+      bird.rotation = Math.max(-0.4, bird.vy * 0.1);
+    } else {
+      bird.rotation = Math.min(1.2, bird.vy * 0.1);
+    }
+
+    if (bird.y + bird.radius > GROUND_Y) {
+      bird.y = GROUND_Y - bird.radius;
+      gameOver();
+    }
+    if (bird.y - bird.radius < 0) {
+      bird.y = bird.radius;
+      bird.vy = 0;
+    }
+
+    travelled += PIPE_SPEED;
+    maybeSpawnPipe();
+
+    for (var i = pipes.length - 1; i >= 0; i--) {
+      var p = pipes[i];
+      p.x -= PIPE_SPEED;
+
+      // 金币收集检测
+      if (p.coin && !p.coin.collected) {
+        var dx = bird.x - (p.x + p.width / 2);
+        var dy = bird.y - p.coin.y;
+        if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
+          p.coin.collected = true;
+          totalCoins++;
+          runCoins++;
+          localStorage.setItem('flappyTotalCoins', totalCoins);
+          updateScoreUI();
+          playCoinSound();
+        }
+      }
+
+      if (!p.passed && p.x + p.width < bird.x - bird.radius) {
+        p.passed = true;
+        score++;
+        updateScoreUI();
+      }
+
+      if (p.x + p.width < 0) {
+        pipes.splice(i, 1);
+        continue;
+      }
+
+      var hitTop = false;
+      if (p.topH > 0) {
+        hitTop = bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + p.width &&
+                  bird.y - bird.radius < p.topH;
+      }
+
+      var hitBottom = bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + p.width &&
+                      bird.y + bird.radius > p.bottomY;
+
+      if (hitTop || hitBottom) {
+        gameOver();
+      }
+    }
+  }
+
+  function gameOver() {
+    gameState = 'gameover';
+
+    // 撞击方向 = 小鸟相对水管的速度矢量（水平恒为前进速度，垂直取当前 vy）
+    var impactSpeed = Math.sqrt(PIPE_SPEED * PIPE_SPEED + bird.vy * bird.vy);
+    camDirX = PIPE_SPEED / impactSpeed;
+    camDirY = bird.vy / impactSpeed;
+    camAmp = Math.min(12, 8 + impactSpeed * 0.6);   // 力度随撞击速度增长，8~12px
+    camX = 0; camY = 0;
+    camHitFrame = 0;
+
+    spawnSplatter(bird.x, bird.y, camDirX, camDirY, impactSpeed);
+    ghosts.length = 0;      // 死亡时清掉扇翅残影与速度线，避免糊在画面上
+    speedLines.length = 0;
+    flapAnim = 0;
+    playHitSound();
+    setHud(false);
+
+    if (score > 0) {
+      leaderboard.push(score);
+      leaderboard.sort(function (a, b) { return b - a; });
+      leaderboard = leaderboard.filter(function (item, pos) { return leaderboard.indexOf(item) === pos; });
+      leaderboard = leaderboard.slice(0, 3);
+      localStorage.setItem('flappyLeaderboard', JSON.stringify(leaderboard));
+      highScore = leaderboard.length > 0 ? leaderboard[0] : 0;
+    }
+
+    overScore.textContent = 'SCORE ' + score + ' · COIN +' + runCoins;
+    overCoins.textContent = 'TOTAL COIN ' + totalCoins;
+    animateGrade(getRatingIndex(score));
+    overScreenPending = true;   // 镜头回弹完再显示结算面板
+    updateScoreUI();
+  }
+
+  function animateGrade(target) {
+    if (gradeTimer) { clearInterval(gradeTimer); gradeTimer = null; }
+    var i = 0;
+    overGrade.textContent = RATINGS[0];
+    if (target === 0) return;
+    gradeTimer = setInterval(function () {
+      i++;
+      overGrade.textContent = RATINGS[Math.min(i, target)];
+      if (i >= target) { clearInterval(gradeTimer); gradeTimer = null; }
+    }, 70);
+  }
+
+  /* ================= 爆浆粒子系统 ================= */
+  // 参考成熟动作游戏的命中反馈：顿帧 → 冲击闪光 → 放射碎块（重力+阻尼） → 渐隐浆斑
+  var SPLAT_BLOCKS = [
+    [-1, -1, 6, 5], [3, -2, 4, 4], [-5, 0, 4, 4], [1, 2, 6, 3], [-2, 3, 5, 3],
+    [5, 1, 3, 3], [-7, -1, 3, 2], [0, -5, 4, 3], [3, 5, 2, 3], [-4, 5, 2, 2],
+    [8, 2, 2, 2], [-9, 2, 2, 2], [1, -8, 2, 3], [-1, 7, 2, 2],
+    [-10, -4, 6, 1], [7, -6, 5, 1], [-3, 9, 4, 1]
+  ];
+
+  function spawnSplatter(x, y, dx, dy, speed) {
+    birdDead = true;
+    splat = { x: x, y: y, t: 0 };
+    flashT = 0;
+
+    var count = 30;
+    for (var i = 0; i < count; i++) {
+      var ang = Math.random() * Math.PI * 2;
+      var sp = 1.4 + Math.random() * 2.9;
+      // 放射状 + 向撞击方向反向偏置
+      var vx = Math.cos(ang) * sp - dx * (1.2 + Math.random() * 2.2);
+      var vy = Math.sin(ang) * sp - dy * (1.2 + Math.random() * 2.2);
+
+      particles.push({
+        x: x + (Math.random() - 0.5) * 10,
+        y: y + (Math.random() - 0.5) * 10,
+        vx: vx,
+        vy: vy - 0.8,
+        size: Math.random() < 0.07 ? 5 : (Math.random() < 0.18 ? 4 : (Math.random() < 0.45 ? 3 : 2)),
+        life: 28 + Math.floor(Math.random() * 24),
+        maxLife: 0,
+        shade: Math.random() < 0.20 ? '#c9cdd2' : (Math.random() < 0.30 ? '#8f8f8f' : (Math.random() < 0.55 ? '#6b6b6b' : '#535353'))
+      });
+    }
+    for (var j = 0; j < particles.length; j++) particles[j].maxLife = particles[j].life;
+  }
+
+  function updateParticles() {
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var q = particles[i];
+      q.x += q.vx;
+      q.y += q.vy;
+      q.vy += 0.26;
+      q.vx *= 0.985;
+      if (q.y > GROUND_Y - 2) {
+        q.y = GROUND_Y - 2;
+        q.vy = -q.vy * 0.35;
+        q.vx *= 0.7;
+      }
+      q.life--;
+      if (q.life <= 0) particles.splice(i, 1);
+    }
+  }
+
+  function updateBurst() {
+    // 顿帧期间粒子也定格，强化打击感
+    if (camHitFrame >= 0 && camHitFrame <= CAM_HITSTOP) return;
+
+    if (flashT >= 0) {
+      flashT++;
+      if (flashT > 7) flashT = -1;
+    }
+
+    if (splat) {
+      splat.t++;
+      if (splat.t > 34) splat = null;
+    }
+
+    updateParticles();
+  }
+
+  function drawBurst() {
+    if (flashT >= 0 && splat) {
+      var fp = flashT / 7;
+      ctx.globalAlpha = 0.5 * (1 - fp);
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(splat.x, splat.y, 7 + fp * 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    if (splat) {
+      var t = splat.t;
+      var grow = Math.min(1, t / 6);
+      var fade = t > 20 ? (34 - t) / 14 : 1;
+      var sc = 0.42 + grow * 0.95;
+      ctx.save();
+      ctx.globalAlpha = 0.85 * fade;
+      ctx.fillStyle = '#535353';
+      for (var i = 0; i < SPLAT_BLOCKS.length; i++) {
+        var b = SPLAT_BLOCKS[i];
+        ctx.fillRect(splat.x + b[0] * sc, splat.y + b[1] * sc, b[2] * sc, b[3] * sc);
+      }
+      ctx.globalAlpha = 0.55 * fade;
+      ctx.fillStyle = '#8f8f8f';
+      ctx.fillRect(splat.x - 6 * sc, splat.y - 8 * sc, 5 * sc, 3 * sc);
+      ctx.fillRect(splat.x + 5 * sc, splat.y - 5 * sc, 4 * sc, 3 * sc);
+      ctx.restore();
+    }
+
+    for (var k = 0; k < particles.length; k++) {
+      var p = particles[k];
+      ctx.globalAlpha = Math.max(0, Math.min(1, p.life / Math.min(14, p.maxLife)));
+      ctx.fillStyle = p.shade;
+      ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* ================= 渲染绘制 ================= */
+  function drawSprite(sprite, x, y, color, scale) {
+    scale = scale || 2;
+    ctx.fillStyle = color;
+    for (var row = 0; row < sprite.length; row++) {
+      var line = sprite[row];
+      for (var col = 0; col < line.length; col++) {
+        if (line.charAt(col) === '1') {
+          ctx.fillRect(x + col * scale, y + row * scale, scale, scale);
+        }
+      }
+    }
+  }
+
+  function drawPixelBird(x, y, scale, rot, frame, sx, sy) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    if (sx && sy) ctx.scale(sx, sy);
+    var sprite = frame % 10 < 5 ? BIRD_UP : BIRD_DOWN;
+    drawSprite(sprite, -6 * scale, -3.5 * scale, '#535353', scale);
+    ctx.restore();
+  }
+
+  /* ---------- 背景：由远及近，越远越淡 ---------- */
+  function rnd(n) {
+    var v = Math.sin(n * 12.9898) * 43758.5453;
+    return v - Math.floor(v);
+  }
+
+  function drawSky() {
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#d6ebf9');
+    g.addColorStop(0.5, '#e9f5fc');
+    g.addColorStop(1, '#f8fcfd');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    // 太阳（最远，最淡）
+    ctx.save();
+    ctx.globalAlpha = 0.14;
+    ctx.fillStyle = '#ffe2ae';
+    ctx.beginPath(); ctx.arc(192, 56, 22, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 0.08;
+    ctx.beginPath(); ctx.arc(192, 56, 36, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  var CLOUDS = [
+    { x: 16, y: 40, sc: 1.0, sp: 0.16, a: 0.88 },
+    { x: 132, y: 24, sc: 0.68, sp: 0.16, a: 0.80 },
+    { x: 150, y: 82, sc: 1.20, sp: 0.26, a: 0.92 },
+    { x: 56, y: 108, sc: 0.78, sp: 0.26, a: 0.84 }
+  ];
+  var CLOUD_PERIOD = 276;
+
+  function drawOneCloud(x, y, sc, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(x, y);
+    ctx.scale(sc, sc);
+    // 底部投影：远虚
+    ctx.fillStyle = 'rgba(202,220,234,0.42)';
+    ctx.fillRect(4, 14, 40, 4);
+    // 云体：逐层加宽，像素风蓬松轮廓
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(11, 0, 15, 4);
+    ctx.fillRect(7, 4, 25, 4);
+    ctx.fillRect(3, 8, 33, 4);
+    ctx.fillRect(0, 12, 42, 4);
+    ctx.fillRect(15, 16, 20, 2);
+    // 边缘淡描边
+    ctx.fillStyle = 'rgba(204,221,235,0.35)';
+    ctx.fillRect(0, 15, 42, 2);
+    ctx.restore();
+  }
+
+  function drawClouds() {
+    for (var i = 0; i < CLOUDS.length; i++) {
+      var c = CLOUDS[i];
+      var x = c.x - (bgScroll * c.sp % CLOUD_PERIOD);
+      if (x > -8) drawOneCloud(x, c.y, c.sc, c.a);
+      if (x < 0) drawOneCloud(x + CLOUD_PERIOD, c.y, c.sc, c.a);
+    }
+  }
+
+  var FAR_PERIOD = 268, MID_PERIOD = 300, NEAR_PERIOD = 220;
+  var farCity = [], midTown = [], nearHill = [];
+
+  (function buildScenery() {
+    var x = 0;
+    while (x < FAR_PERIOD - 10) {
+      var w = 13 + Math.floor(rnd(x + 1) * 14);
+      var h = 26 + Math.floor(rnd(x + 5) * 44);
+      farCity.push({ x: x, w: w, h: h });
+      x += w + 6 + Math.floor(rnd(x + 9) * 10);
+    }
+    x = 0;
+    while (x < MID_PERIOD - 20) {
+      var mw = 24 + Math.floor(rnd(x + 11) * 14);
+      var mh = 20 + Math.floor(rnd(x + 15) * 18);
+      midTown.push({ x: x, w: mw, h: mh });
+      x += mw + 12 + Math.floor(rnd(x + 19) * 14);
+    }
+    x = 0;
+    while (x < NEAR_PERIOD - 10) {
+      var nw = 22 + Math.floor(rnd(x + 21) * 16);
+      var nh = 7 + Math.floor(rnd(x + 25) * 9);
+      nearHill.push({ x: x, w: nw, h: nh });
+      x += nw + 10;
+    }
+  })();
+
+  // 远处城市：最淡、最高，最慢
+  function drawFarCityItem(x, b) {
+    ctx.fillRect(x, GROUND_Y - b.h, b.w, b.h);
+    ctx.fillStyle = '#f2f8fd';
+    for (var wy = GROUND_Y - b.h + 6; wy < GROUND_Y - 6; wy += 9) {
+      for (var wx = x + 4; wx < x + b.w - 3; wx += 8) {
+        ctx.fillRect(wx, wy, 3, 3);
+      }
+    }
+  }
+
+  function drawFarCity() {
+    var shift = bgScroll * 0.14 % FAR_PERIOD;
+    ctx.save();
+    ctx.fillStyle = '#e0eaf3';
+    for (var i = 0; i < farCity.length; i++) {
+      var b = farCity[i];
+      var x = b.x - shift;
+      if (x + b.w > 0 && x < W) drawFarCityItem(x, b);
+      if (x < 0) drawFarCityItem(x + FAR_PERIOD, b);
+    }
+    ctx.restore();
+  }
+
+  // 中景房屋：带屋顶与亮窗
+  function drawMidHouse(x, m) {
+    var base = GROUND_Y, w = m.w, h = m.h, roof = 11;
+    // 屋顶
+    ctx.beginPath();
+    ctx.moveTo(x - 3, base - h);
+    ctx.lineTo(x + w / 2, base - h - roof);
+    ctx.lineTo(x + w + 3, base - h);
+    ctx.closePath();
+    ctx.fill();
+    // 墙体
+    ctx.fillRect(x, base - h, w, h);
+    // 亮着的窗（近处更亮）
+    ctx.fillStyle = '#fbfefF';
+    var cols = Math.max(1, Math.floor(w / 11));
+    for (var c = 0; c < cols; c++) {
+      for (var r = 0; r < 2; r++) {
+        ctx.fillRect(x + 5 + c * 11, base - h + (r === 0 ? 8 : 18), 4, 5);
+      }
+    }
+    // 屋顶压边（区分层次）
+    ctx.fillStyle = 'rgba(150,169,187,0.5)';
+    ctx.fillRect(x - 2, base - h, w + 4, 2);
+  }
+
+  function drawMidTown() {
+    var shift = bgScroll * 0.34 % MID_PERIOD;
+    ctx.save();
+    ctx.fillStyle = '#c3d3e0';
+    for (var i = 0; i < midTown.length; i++) {
+      var m = midTown[i];
+      var x = m.x - shift;
+      if (x + m.w + 4 > 0 && x - 4 < W) drawMidHouse(x, m);
+      if (x < 0) drawMidHouse(x + MID_PERIOD, m);
+    }
+    ctx.restore();
+  }
+
+  // 近景灌木草坡：比远景深，但仍浅于水管
+  function drawHillItem(x, n) {
+    ctx.beginPath();
+    ctx.moveTo(x, GROUND_Y);
+    ctx.quadraticCurveTo(x + n.w / 2, GROUND_Y - n.h * 2.1, x + n.w, GROUND_Y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawNearHill() {
+    var shift = bgScroll * 0.85 % NEAR_PERIOD;
+    ctx.save();
+    ctx.fillStyle = '#9fb2c2';
+    for (var i = 0; i < nearHill.length; i++) {
+      var n = nearHill[i];
+      var x = n.x - shift;
+      if (x + n.w > 0 && x < W) drawHillItem(x, n);
+      if (x < 0) drawHillItem(x + NEAR_PERIOD, n);
+    }
+    ctx.restore();
+  }
+
+  function drawGround() {
+    ctx.fillStyle = '#f4f6f8';
+    ctx.fillRect(0, GROUND_Y + 2, W, H - GROUND_Y - 2);
+
+    ctx.fillStyle = '#535353';
+    ctx.fillRect(0, GROUND_Y, W, 2);
+
+    ctx.fillStyle = '#dfe3e8';
+    var off = bgScroll % 20;
+    for (var i = -20; i < W + 20; i += 20) {
+      ctx.fillRect(i - off, H - 20, 10, 2);
+    }
+  }
+
+  function drawPipes() {
+    for (var i = 0; i < pipes.length; i++) {
+      var p = pipes[i];
+      ctx.fillStyle = '#535353';
+
+      if (p.type === 'pipe') {
+        ctx.fillRect(p.x, 0, p.width, p.topH);
+        ctx.fillRect(p.x - 4, p.topH - 20, p.width + 8, 20);
+        ctx.fillRect(p.x, p.bottomY, p.width, GROUND_Y - p.bottomY);
+        ctx.fillRect(p.x - 4, p.bottomY, p.width + 8, 20);
+
+        ctx.fillStyle = '#e5e7eb';
+        ctx.fillRect(p.x + 6, 0, 4, Math.max(0, p.topH - 20));
+        ctx.fillRect(p.x + 6, p.bottomY + 20, 4, Math.max(0, GROUND_Y - p.bottomY - 20));
+      } else {
+        ctx.fillRect(p.x + 5, p.bottomY, p.width - 10, GROUND_Y - p.bottomY);
+        ctx.fillRect(p.x, p.bottomY + 4, p.width, 6);
+        ctx.fillRect(p.x, p.bottomY + 19, p.width, 6);
+        ctx.fillRect(p.x, p.bottomY + 34, p.width, 6);
+      }
+    }
+  }
+
+  function drawCoins() {
+    for (var i = 0; i < pipes.length; i++) {
+      var p = pipes[i];
+      if (!p.coin || p.coin.collected) continue;
+      var cx = p.x + p.width / 2;
+      var cy = p.coin.y;
+      ctx.fillStyle = '#535353';
+      ctx.fillRect(cx - 5, cy - 5, 10, 10);
+      ctx.fillStyle = '#f7f7f7';
+      ctx.fillRect(cx - 2, cy - 2, 4, 4);
+    }
+  }
+
+  function draw() {
+    // 扇翅缩放冲击（以画面中心为轴）
+    var zoom = 1 + 0.016 * zoomAnim;
+    ctx.save();
+    if (zoom !== 1) {
+      ctx.translate(W / 2, H / 2);
+      ctx.scale(zoom, zoom);
+      ctx.translate(-W / 2, -H / 2);
+    }
+
+    drawSky();
+
+    // 扇翅瞬间 1px 微抖
+    var shx = 0, shy = 0;
+    if (shakeT > 0) {
+      shx = (Math.random() - 0.5) * 2;
+      shy = (Math.random() - 0.5) * 2;
+    }
+
+    ctx.save();
+    ctx.translate(camX + shx, camY + kick + shy);
+    drawClouds();
+    drawFarCity();
+    drawMidTown();
+    drawNearHill();
+    drawGround();
+    drawPipes();
+    drawCoins();
+    drawBurst();
+    ctx.restore();
+
+    // 上升残影
+    for (var g = 0; g < ghosts.length; g++) {
+      ctx.globalAlpha = 0.18 * (ghosts[g].life / ghosts[g].max);
+      drawPixelBird(ghosts[g].x, ghosts[g].y, 2, ghosts[g].rot, frameCount);
+    }
+    ctx.globalAlpha = 1;
+
+    // 速度线
+    for (var l = 0; l < speedLines.length; l++) {
+      var ln = speedLines[l];
+      var lf = 1 - ln.t / ln.ttl;
+      ctx.globalAlpha = 0.55 * lf;
+      ctx.fillStyle = '#6b7480';
+      ctx.fillRect(Math.round(ln.x), Math.round(ln.y - ln.len), 1, ln.len);
+    }
+    ctx.globalAlpha = 1;
+
+    // 小鸟：扇翅瞬间纵向拉伸、横向压窄
+    if (!birdDead && gameState !== 'home' && gameState !== 'records') {
+      var sy = 1 + 0.18 * flapAnim;
+      var sx = 1 - 0.08 * flapAnim;
+      drawPixelBird(bird.x, bird.y, 2, bird.rotation, frameCount, sx, sy);
+    }
+
+    ctx.restore();
+  }
+
+  function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  /* ================= 窗口拖动 ================= */
+  var isDragging = false;
+  var dragStartX = 0, dragStartY = 0;
+  var cardStartX = 0, cardStartY = 0;
+
+  card.addEventListener('mousedown', function (e) {
+    if (e.ctrlKey && e.button === 0) {
+      e.preventDefault();
+      var rect = card.getBoundingClientRect();
+      card.style.right = 'auto'; card.style.bottom = 'auto';
+      card.style.left = rect.left + 'px'; card.style.top = rect.top + 'px';
+      isDragging = true;
+      dragStartX = e.clientX; dragStartY = e.clientY;
+      cardStartX = rect.left; cardStartY = rect.top;
+      card.classList.add('dragging');
+    }
+  });
+
+  window.addEventListener('mousemove', function (e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    var dx = e.clientX - dragStartX; var dy = e.clientY - dragStartY;
+    var newLeft = Math.max(0, Math.min(cardStartX + dx, window.innerWidth - card.offsetWidth));
+    var newTop = Math.max(0, Math.min(cardStartY + dy, window.innerHeight - card.offsetHeight));
+    card.style.left = newLeft + 'px'; card.style.top = newTop + 'px';
+  });
+
+  window.addEventListener('mouseup', function (e) {
+    if (isDragging) { isDragging = false; card.classList.remove('dragging'); }
+  });
+
+  updateScoreUI();
+  goHome();
+  gameLoop();
+
+})();
+</script>
+</body>
+</html>

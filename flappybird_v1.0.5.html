@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>开发者社区 - 极客视界</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --text:#1f2329; --muted:#8f959e;
+    --line:#e5e6eb; --accent:#1e80ff; --hover:#f2f3f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.8;font-size:15px;
+  }
+  
+  /* 顶部导航 */
+  header{
+    background:#fff;border-bottom:1px solid var(--line);position:fixed;width:100%;top:0;z-index:100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .header-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-weight:700;font-size:20px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:8px;}
+  .logo svg{width:24px;height:24px;fill:var(--accent)}
+  .nav-links{display:flex;gap:24px;font-size:15px;}
+  .nav-links a{color:var(--text);text-decoration:none;transition:color .2s;cursor:pointer;}
+  .nav-links a:hover{color:var(--accent);}
+  .nav-links a.active{color:var(--accent); font-weight:600;}
+  .search-box{width:200px;height:32px;background:var(--hover);border-radius:16px;display:flex;align-items:center;padding:0 12px;color:var(--muted);font-size:13px;}
+  
+  /* 主体布局 */
+  .layout{max-width:1200px;margin:0 auto;padding:80px 20px 100px;display:flex;gap:24px;align-items:flex-start;}
+  .main-content{flex:1; min-height: 8000px; max-width:800px;}
+  
+  /* 多页面切换 */
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* 资讯卡片 */
+  .article-card{
+    background:#fff;border-radius:8px;padding:28px;margin-bottom:20px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.03);border:1px solid transparent;transition:border-color .2s;
+    cursor:pointer;
+  }
+  .article-card:hover{border-color:#e0e0e0; box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+  
+  .info{display:flex;flex-direction:column;}
+  .info h2{font-size:22px;font-weight:600;margin-bottom:14px;color:#252933;line-height:1.4;}
+  .info h2 a{text-decoration:none;color:inherit;transition:color .2s;}
+  .info h2 a:hover{color:var(--accent);}
+  .info p{color:#515767;font-size:15px;margin-bottom:18px;line-height:1.9; text-align: justify;}
+  
+  .meta{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:16px;}
+  .tags span{background:var(--hover);color:#515767;padding:4px 12px;border-radius:4px;margin-right:8px;font-size:12px;}
+  .author{display:flex;align-items:center;gap:8px;}
+  .avatar{width:26px;height:26px;border-radius:50%;background:#ccc;}
+
+  /* 文章详情页 */
+  .article-detail { background: #fff; padding: 48px; border-radius: 8px; box-shadow:0 1px 3px rgba(0,0,0,0.03); }
+  .article-detail h1 { font-size: 34px; margin-bottom: 24px; color: #252933; line-height: 1.3;}
+  .article-detail .meta { margin-bottom: 36px; border-bottom: 1px solid var(--line); padding-bottom: 24px; border-top: none; padding-top: 0;}
+  .article-detail p { margin-bottom: 24px; font-size: 16px; color: #333; line-height: 2; text-align: justify;}
+  .article-detail h2 { font-size: 26px; margin: 48px 0 20px; color: #252933; border-left: 4px solid var(--accent); padding-left: 12px;}
+  .article-detail h3 { font-size: 20px; margin: 32px 0 16px; color: #1f2937; }
+  .article-detail ul, .article-detail ol { margin-bottom: 24px; padding-left: 28px; color: #333; font-size: 16px; line-height: 2;}
+  .article-detail pre { background: #282c34; color: #abb2bf; padding: 24px; border-radius: 6px; overflow-x: auto; margin-bottom: 28px; font-family: "Cascadia Code", Consolas, monospace; font-size: 14px; line-height: 1.6;}
+  .article-detail code { background: #f2f3f5; padding: 2px 6px; border-radius: 4px; color: #e83e8c; font-family: monospace; }
+  .article-detail pre code { background: transparent; color: inherit; padding: 0; }
+  .back-btn { display: inline-block; margin-bottom: 24px; color: var(--accent); cursor: pointer; text-decoration: none; font-weight: 500; font-size: 15px;}
+  .back-btn:hover { text-decoration: underline; }
+
+  /* 右侧边栏 */
+  .sidebar{width:320px;flex-shrink:0;}
+  .side-box{background:#fff;border-radius:8px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.03);position:sticky;top:80px;}
+  .side-title{font-size:16px;font-weight:600;margin-bottom:18px;color:#252933;border-bottom:1px solid var(--line);padding-bottom:14px;}
+  .side-list{list-style:none;}
+  .side-list li{margin-bottom:22px;}
+  .side-list h4{font-size:15px;font-weight:500;margin-bottom:8px;line-height:1.5;}
+  .side-list h4 a{text-decoration:none;color:#252933;cursor:pointer;}
+  .side-list h4 a:hover{color:var(--accent);}
+  .side-list .sub{font-size:12px;color:var(--muted);}
+
+  /* ================= 游戏窗口（极低透明度 0.04） ================= */
+  .game-card{
+    position: fixed;
+    bottom: 10vh; 
+    right: calc(max(20px, (100vw - 1200px) / 2 + 20px));
+    width: 240px;
+    z-index: 9999;
+    background:#fff;border:1px solid var(--line);border-radius:12px;
+    overflow:hidden;outline:none;cursor: default;
+    opacity:var(--card-alpha,0.048);
+    user-select:none;-webkit-user-select:none;-ms-user-select:none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    transition: opacity 0.2s;
+  }
+  
+  .game-card.dragging {
+    cursor: grabbing;
+    opacity: 0.18;
+  }
+  
+  .game-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .game-head .title{display:flex;align-items:center;gap:6px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;}
+  .game-score{font-family:"Cascadia Code",Consolas,monospace;font-size:12px;color:#374151}
+  
+  /* 金币显示 */
+  .coin-display{display:flex;align-items:center;gap:4px;font-family:"Cascadia Code",Consolas,monospace;font-size:12px;color:#374151;}
+  .coin-icon{width:8px;height:8px;border-radius:50%;background:#535353;}
+
+  .game-wrap{position:relative;background:#f7f7f7;line-height:0}
+  canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none}
+
+  /* ===== 游戏界面层（主页 / 记录 / 暂停 / 结算） ===== */
+  .screen{
+    position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+    gap:9px;padding:16px 18px;text-align:center;line-height:1.4;
+    background:rgba(250,252,254,0.55);
+    font-family:"Cascadia Code",Consolas,monospace;
+  }
+  .screen.show{display:flex}
+  .screen.dim{background:rgba(248,250,252,0.88)}
+  .home-logo{font-weight:800;font-size:26px;letter-spacing:2px;color:#535353}
+  .home-sub{font-size:10px;letter-spacing:1.6px;color:#a2abb5;margin-bottom:6px}
+  .panel-title{font-weight:700;font-size:15px;letter-spacing:1.4px;color:#535353;margin-bottom:2px}
+  .btn{
+    width:136px;padding:9px 0;border-radius:7px;border:1px solid #d8dee5;background:#fff;color:#4b5563;
+    font-family:"Cascadia Code",Consolas,monospace;font-weight:600;font-size:13px;letter-spacing:.6px;
+    cursor:pointer;transition:background .15s,border-color .15s,transform .1s;
+  }
+  .btn:hover{background:#f1f4f7;border-color:#c6d0da}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:#535353;border-color:#464646;color:#fff}
+  .btn-primary:hover{background:#3f3f3f;border-color:#383838}
+  .btn-sm{width:auto;padding:6px 14px;font-size:11px;font-weight:500;letter-spacing:0}
+  .records{width:100%;max-width:190px;font-size:11px;color:#4b5563;text-align:left}
+  .records .row{display:flex;justify-content:space-between;gap:8px;padding:5px 2px;border-bottom:1px dashed #e4e8ed}
+  .records .row span:first-child{color:#9aa3ad}
+  .records .row span:last-child{font-weight:700;color:#535353}
+  .records .empty{text-align:center;color:#9aa3ad;padding:10px 0}
+  .records .sum{margin-top:8px;font-size:11px;color:#8f959e;text-align:center;border:none;justify-content:center;gap:14px}
+  .over-grade{font-weight:800;font-size:32px;line-height:1;color:#535353}
+  .over-score{font-size:12px;color:#5b6470}
+  .over-coins{font-size:11px;color:#8f959e}
+  .hud-btn{
+    position:absolute;top:7px;right:7px;width:26px;height:26px;padding:0;border-radius:6px;
+    border:1px solid #e0e4e9;background:rgba(255,255,255,.88);color:#535353;font-size:12px;line-height:1;
+    display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2;
+  }
+  .hud-btn.show{display:inline-flex}
+  .hud-btn:hover{background:#fff;border-color:#cfd6de}
+
+  
+  @media(max-width:1160px) { .game-card { right: 20px; } }
+  @media(max-width:860px){ 
+    .layout{flex-direction:column;} 
+    .sidebar{display:none;}
+    .game-card { bottom: 20px; right: 20px; width: 220px; } 
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo" onclick="switchPage('page-home'); return false;">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+      极客视界
+    </a>
+    <div class="nav-links">
+      <a href="#" class="active" onclick="switchPage('page-home', this); return false;">首页</a>
+      <a href="#" onclick="switchPage('page-pins', this); return false;">沸点</a>
+      <a href="#" onclick="switchPage('page-course', this); return false;">课程</a>
+      <a href="#" onclick="switchPage('page-open', this); return false;">开源</a>
+    </div>
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      搜索文章、标签
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="main-content">
+    <div id="page-home" class="page active">
+      <div class="article-card" onclick="openArticle('分布式系统架构深度指南：从微服务到云原生')">
+        <div class="info">
+          <h2><a>分布式系统架构深度指南：从微服务到云原生</a></h2>
+          <p>这是一本非常详尽的技术手册，涵盖了现代分布式系统设计的方方面面。从 CAP 理论的演变开始，深入探讨 Raft 和 Paxos 共识算法在不同业务场景下的取舍。在微服务架构中，服务发现、配置中心、API 网关以及链路追踪是构建高可用系统的基础。本文详细拆解了如何通过 Envoy 代理和 Istio 服务网格实现精细化的流量控制，如何进行全链路压测评估系统容量，以及在遭遇网络分区时，如何设计优雅的降级与熔断方案。包含大量生产环境中的真实配置代码和 Kubernetes 容器编排实战案例。</p>
+          <div class="meta">
+            <div class="tags"><span>分布式</span><span>微服务</span><span>云原生</span></div>
+            <div class="author"><div class="avatar"></div> 极客架构师 · 1小时前</div>
+          </div>
+        </div>
+      </div>
+      <div class="article-card" onclick="openArticle('深入理解 Chrome V8 引擎的垃圾回收机制与内存泄漏排查')">
+        <div class="info">
+          <h2><a>深入理解 Chrome V8 引擎的垃圾回收机制与内存泄漏排查</a></h2>
+          <p>V8 引擎的垃圾回收是前端性能优化的核心。本文从新生代 (Scavenge) 和老生代 (Mark-Sweep/Mark-Compact) 算法切入，详细拆解内存分配与回收的全过程。我们将探讨如何通过分代收集、增量标记、惰性清理等策略，减少全停顿（Stop-The-World）带来的卡顿，并结合实际案例讲解在复杂单页应用中如何进行内存泄漏的排查与调优。深入剖析新生代的 Cheney 算法是如何利用空间换时间，将存活对象在两个 Semi-Space 之间来回拷贝的。</p>
+          <div class="meta">
+            <div class="tags"><span>JavaScript</span><span>V8引擎</span><span>性能优化</span></div>
+            <div class="author"><div class="avatar" style="background:#a18cd1"></div> 前端专家 · 3小时前</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-article" class="page">
+      <a class="back-btn" onclick="switchPage('page-home'); return false;">← 返回首页</a>
+      <div class="article-detail">
+        <h1 id="article-title">文章标题占位</h1>
+        <div class="meta"><div class="author"><div class="avatar"></div> 资深架构师 · 阅读量 12.8w · 预计阅读 45 分钟</div></div>
+        
+        <p>这是一篇非常硬核的技术文档，是对分布式系统架构演进、核心原理与生产实践的全景式总结。在阅读此文章之前，请确保你具备一定的计算机基础知识，了解网络通信、操作系统以及常见的数据结构。</p>
+        
+        <h2>第一章：单体架构的困境与微服务的崛起</h2>
+        <p>在早期的互联网时代，由于业务逻辑相对简单、访问量较小，大多数系统采用单体架构。所有的功能模块都打包在一个单一的应用程序中，共享同一个数据库。这种架构在项目初期具有开发速度快、部署简单等显著优势。然而，随着业务规模的爆发式增长，单体架构逐渐暴露出严重的问题：</p>
+        <ul>
+          <li><strong>代码耦合度高：</strong> 团队规模扩大后，多个开发者同时修改同一份代码，容易产生代码冲突，沟通成本急剧上升。</li>
+          <li><strong>部署效率低下：</strong> 任何微小的改动都需要重新编译、打包并部署整个应用，风险极高。</li>
+          <li><strong>扩展性差：</strong> 无法针对特定模块进行独立扩容，造成极大的资源浪费。</li>
+        </ul>
+        <p>为了解决这些问题，微服务架构应运而生。系统被拆分为多个独立运行、高度自治的服务。每个服务都围绕着特定的业务领域构建，拥有独立的数据库，并通过轻量级的通信机制进行交互。</p>
+
+        <h2>第二章：CAP 理论与 BASE 理论</h2>
+        <p>在分布式系统中，CAP 理论（Consistency 一致性、Availability 可用性、Partition tolerance 分区容错性）是设计任何系统时必须面对的铁律。由于网络分区（P）在分布式环境中是不可避免的，因此我们只能在一致性（C）和可用性（A）之间做出取舍。</p>
+        <p>对于核心交易链路，我们通常选择 CP 模型，保证数据的绝对一致；而对于非核心的查询链路，则倾向于 AP 模型，通过牺牲强一致性来换取系统的高可用性。</p>
+
+        <h2>第三章：分布式共识算法（Raft 与 Paxos）</h2>
+        <p>在分布式系统中，如何让多个节点对某个值达成一致，是极其困难的问题。Paxos 算法以其极高的理论门槛闻名，而 Raft 算法则以易于理解和工程实现著称。</p>
+        <pre><code>// 一个简化的 Raft 节点状态定义
+type Raft struct {
+    mu        sync.Mutex
+    peers     []*labrpc.ClientEnd
+    
+    // 持久化状态 (所有节点)
+    currentTerm int
+    votedFor    int
+    logs        []LogEntry
+}</code></pre>
+
+        <h2>第四章：可观测性（Observability）三剑客</h2>
+        <p>在复杂的微服务架构中，传统的监控手段已经无法满足排错的需求。我们需要建立完善的可观测性体系，即通过日志（Logging）、指标（Metrics）和链路追踪（Tracing）来推断系统内部的健康状况。</p>
+        
+        <div style="height: 300px;"></div>
+        <p style="text-align: center; color: #888;">（文档已到底部，感谢您的阅读）</p>
+      </div>
+    </div>
+
+    <div id="page-pins" class="page"><div class="article-card"><div class="info"><h2 style="font-size:18px;">大家平时用什么工具画架构图？</h2></div></div></div>
+    <div id="page-course" class="page"><div class="article-card"><div class="info"><h2>React 18 源码剖析实战课程</h2></div></div></div>
+    <div id="page-open" class="page"><div class="article-card"><div class="info"><h2>Vue.js - 渐进式 JavaScript 框架</h2></div></div></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="side-box">
+      <div class="side-title">热门推荐</div>
+      <ul class="side-list">
+        <li><h4><a onclick="openArticle('分布式系统架构深度指南')">分布式系统架构深度指南</a></h4><div class="sub">1.5w 阅读 · 320 评论</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Flappy Bird 游戏卡片 -->
+<div class="game-card" id="gameCard" tabindex="0" title="左键开始/暂停 · 滚轮上滑起飞 · Ctrl+滚轮 调透明度 · Ctrl+左键 拖动">
+  <div class="game-head">
+    <span class="title"><span class="dot"></span>像素小鸟</span>
+    <span class="game-score" id="scoreDisplay">HI 00 · 00</span>
+    <div class="coin-display" title="总金币数"><div class="coin-icon"></div> <span id="coinDisplay">0</span></div>
+  </div>
+  <div class="game-wrap">
+    <canvas id="gameCanvas" width="240" height="320" draggable="false"></canvas>
+
+    <div class="screen show" id="screenHome">
+      <div class="home-logo">FLAPPY</div>
+      <div class="home-sub">PIXEL BIRD</div>
+      <button class="btn btn-primary" id="btnFly">FLY!</button>
+      <button class="btn" id="btnRecords">RECORDS</button>
+    </div>
+
+    <div class="screen" id="screenRecords">
+      <div class="panel-title">RECORDS</div>
+      <div class="records" id="recordsBody"></div>
+      <button class="btn btn-sm" id="btnRecordsBack">BACK</button>
+    </div>
+
+    <div class="screen dim" id="screenPaused">
+      <div class="panel-title">PAUSED</div>
+      <button class="btn btn-primary" id="btnResume">RESUME</button>
+      <button class="btn btn-sm" id="btnPauseHome">BACK</button>
+    </div>
+
+    <div class="screen dim" id="screenOver">
+      <div class="panel-title">GAME OVER</div>
+      <div class="over-grade" id="overGrade">F</div>
+      <div class="over-score" id="overScore">得分 0</div>
+      <div class="over-coins" id="overCoins">金币 +0</div>
+      <button class="btn btn-primary" id="btnAgain">AGAIN</button>
+      <button class="btn btn-sm" id="btnOverRecords">RECORDS</button>
+    </div>
+
+    <button class="hud-btn" id="btnPause" title="暂停">⏸</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= 页面路由 ================= */
+  window.switchPage = function(pageId, navElement) {
+    document.querySelectorAll('.page').forEach(function(el) { el.classList.remove('active'); });
+    var target = document.getElementById(pageId);
+    if(target) target.classList.add('active');
+    if(navElement) {
+        document.querySelectorAll('.nav-links a').forEach(function(a) { a.classList.remove('active'); });
+        navElement.classList.add('active');
+    } else {
+        document.querySelectorAll('.nav-links a').forEach(function(a) { a.classList.remove('active'); });
+        if(pageId === 'page-home') document.querySelector('.nav-links a:nth-child(1)').classList.add('active');
+    }
+    window.scrollTo(0, 0);
+  };
+  window.openArticle = function(title) {
+    document.getElementById('article-title').textContent = title;
+    switchPage('page-article');
+  };
+  /* ==================================================== */
+
+
+  /* ================= Flappy Bird 核心逻辑 ================= */
+  var canvas = document.getElementById('gameCanvas');
+  var ctx = canvas.getContext('2d');
+  var card = document.getElementById('gameCard');
+  var scoreEl = document.getElementById('scoreDisplay');
+  var coinEl = document.getElementById('coinDisplay');
+
+  var screenHome = document.getElementById('screenHome');
+  var screenRecords = document.getElementById('screenRecords');
+  var screenPaused = document.getElementById('screenPaused');
+  var screenOver = document.getElementById('screenOver');
+  var recordsBody = document.getElementById('recordsBody');
+  var overGrade = document.getElementById('overGrade');
+  var overScore = document.getElementById('overScore');
+  var overCoins = document.getElementById('overCoins');
+  var btnPause = document.getElementById('btnPause');
+
+  var W = 240, H = 320;
+  var GROUND_Y = H - 40;
+
+  var gameState = 'home';
+  var score = 0, runCoins = 0, frameCount = 0, bgScroll = 0;
+  var travelled = 0;   // 本局已飞行的水平距离(px)，用于按距离生成障碍
+
+  // 撞击镜头：顿帧 + 沿撞击速度方向的矢量回弹（橡皮筋）
+  var camX = 0, camY = 0;          // 世界位移
+  var camDirX = -1, camDirY = 0;   // 回弹方向（单位向量）
+  var camAmp = 12;                 // 最大位移(px)
+  var camHitFrame = -1;
+  var CAM_HITSTOP = 4;             // 顿帧（约 67ms，成熟动作游戏常见 50~100ms）
+  var CAM_STRETCH = 8;             // 前进拉伸（约 133ms）
+  var CAM_REBOUND = 8;             // 回弹（约 133ms，含 12% 过冲）
+  var overScreenPending = false;   // 等回弹结束后再弹出结算面板
+
+  // 排行榜与金币数据
+  var leaderboard = JSON.parse(localStorage.getItem('flappyLeaderboard')) || [];
+  var highScore = leaderboard.length > 0 ? leaderboard[0] : 0;
+  var totalCoins = parseInt(localStorage.getItem('flappyTotalCoins')) || 0;
+
+  var GRAVITY = 0.35;
+  var JUMP_FORCE = -5.5;
+  var PIPE_SPEED = 2.5;
+  var PIPE_GAP = 110;
+
+  var bird = { x: 60, y: H / 2, vy: 0, radius: 10, rotation: 0 };
+  var pipes = [];
+
+  var RATINGS = ['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SS', 'SSS+'];
+  var gradeTimer = null;
+
+  var BIRD_UP = [
+    "000011000000", "000111100000", "001111111100", "111111111110",
+    "111111111100", "001111111000", "000111100000"
+  ];
+  var BIRD_DOWN = [
+    "000011000000", "000111100000", "001111111100", "111111111110",
+    "001111111100", "000111111000", "000011110000"
+  ];
+
+  function updateScoreUI() {
+    scoreEl.textContent = 'HI ' + String(highScore).padStart(2, '0') + ' · ' + String(score).padStart(2, '0');
+    coinEl.textContent = totalCoins;
+  }
+
+  function getRatingIndex(s) {
+    if (s < 5) return 0;
+    if (s < 10) return 1;
+    if (s < 20) return 2;
+    if (s < 30) return 3;
+    if (s < 40) return 4;
+    if (s < 50) return 5;
+    if (s < 70) return 6;
+    if (s < 90) return 7;
+    return 8;
+  }
+
+  /* ================= 界面切换 ================= */
+  function setScreen(name) {
+    screenHome.classList.toggle('show', name === 'home');
+    screenRecords.classList.toggle('show', name === 'records');
+    screenPaused.classList.toggle('show', name === 'paused');
+    screenOver.classList.toggle('show', name === 'over');
+  }
+
+  function setHud(show) {
+    btnPause.classList.toggle('show', !!show);
+  }
+
+  function resetCamera() {
+    camX = 0; camY = 0;
+    camHitFrame = -1;
+  }
+
+  function goHome() {
+    gameState = 'home';
+    resetCamera();
+    overScreenPending = false;
+    score = 0; runCoins = 0; pipes = []; frameCount = 0;
+    bird.y = H / 2; bird.vy = 0; bird.rotation = 0;
+    setScreen('home'); setHud(false);
+    updateScoreUI();
+  }
+
+  function startGame() {
+    gameState = 'playing';
+    resetCamera();
+    overScreenPending = false;
+    travelled = 0;
+    score = 0; runCoins = 0; pipes = []; frameCount = 0;
+    bird.y = H / 2; bird.vy = JUMP_FORCE; bird.rotation = 0;
+    setScreen(null); setHud(true);
+    playJumpSound();
+    updateScoreUI();
+  }
+
+  function pauseGame() {
+    if (gameState !== 'playing') return;
+    gameState = 'paused';
+    setScreen('paused'); setHud(false);
+  }
+
+  function resumeGame() {
+    if (gameState !== 'paused') return;
+    gameState = 'playing';
+    setScreen(null); setHud(true);
+  }
+
+  function openRecords() {
+    renderRecords();
+    gameState = 'records';
+    setScreen('records'); setHud(false);
+  }
+
+  function renderRecords() {
+    var html = '';
+    if (leaderboard.length === 0) {
+      html = '<div class="empty">还没有飞行记录</div>';
+    } else {
+      for (var i = 0; i < leaderboard.length; i++) {
+        html += '<div class="row"><span>#' + (i + 1) + '</span><span>' +
+                RATINGS[getRatingIndex(leaderboard[i])] + '</span><span>' +
+                leaderboard[i] + '</span></div>';
+      }
+    }
+    html += '<div class="row sum"><span>总金币 ' + totalCoins + '</span><span>最高 ' + highScore + '</span></div>';
+    recordsBody.innerHTML = html;
+  }
+
+  /* ================= 音效 ================= */
+  function playJumpSound() {
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      var osc = ac.createOscillator(), gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(400, ac.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, ac.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.05, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.1);
+      osc.start(ac.currentTime); osc.stop(ac.currentTime + 0.1);
+    } catch (e) {}
+  }
+
+  function playCoinSound() {
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      var osc = ac.createOscillator(), gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(800, ac.currentTime);
+      osc.frequency.setValueAtTime(1200, ac.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.05, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.15);
+      osc.start(ac.currentTime); osc.stop(ac.currentTime + 0.15);
+    } catch (e) {}
+  }
+
+  function playHitSound() {
+    try {
+      var ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      var size = Math.floor(ac.sampleRate * 0.15);
+      var buffer = ac.createBuffer(1, size, ac.sampleRate);
+      var data = buffer.getChannelData(0);
+      for (var i = 0; i < size; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / size);
+      var src = ac.createBufferSource(); src.buffer = buffer;
+      var gain = ac.createGain();
+      src.connect(gain); gain.connect(ac.destination);
+      gain.gain.setValueAtTime(0.1, ac.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.15);
+      src.start();
+    } catch (e) {}
+  }
+
+  /* ================= 按钮交互 ================= */
+  function onBtn(el, fn) {
+    el.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+    el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fn(); });
+  }
+  onBtn(document.getElementById('btnFly'), startGame);
+  onBtn(document.getElementById('btnRecords'), openRecords);
+  onBtn(document.getElementById('btnRecordsBack'), goHome);
+  onBtn(document.getElementById('btnResume'), resumeGame);
+  onBtn(document.getElementById('btnPauseHome'), goHome);
+  onBtn(document.getElementById('btnAgain'), startGame);
+  onBtn(document.getElementById('btnOverRecords'), openRecords);
+  onBtn(btnPause, pauseGame);
+
+  /* ================= 交互控制（快捷键保留） ================= */
+  card.addEventListener('mousedown', function (e) {
+    if (e.ctrlKey) return;
+    if (e.button !== 0) return;
+    if (e.target && e.target.closest && e.target.closest('button')) return;
+    e.preventDefault();
+
+    if (gameState === 'home') {
+      startGame();
+    } else if (gameState === 'playing') {
+      pauseGame();
+    } else if (gameState === 'paused') {
+      resumeGame();
+    } else if (gameState === 'gameover') {
+      startGame();
+    }
+  });
+
+  // Ctrl + 上下滚轮：窗口不透明度在 0.04 ~ 0.08 之间调节
+  var cardAlpha = 0.048;
+  var ALPHA_MIN = 0.04, ALPHA_MAX = 0.08, ALPHA_STEP = 0.005;
+  card.style.setProperty('--card-alpha', cardAlpha.toFixed(3));
+
+  card.addEventListener('wheel', function (e) {
+    e.preventDefault();
+
+    if (e.ctrlKey) {
+      var dir = e.deltaY < 0 ? 1 : -1;
+      cardAlpha = Math.min(ALPHA_MAX, Math.max(ALPHA_MIN, cardAlpha + dir * ALPHA_STEP));
+      card.style.setProperty('--card-alpha', cardAlpha.toFixed(3));
+      return;
+    }
+
+    if (gameState !== 'playing') return;
+    if (e.deltaY < 0) {
+      bird.vy = JUMP_FORCE;
+      playJumpSound();
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+    if (gameState === 'playing') {
+      bird.vy = JUMP_FORCE;
+      playJumpSound();
+    } else if (gameState === 'home' || gameState === 'gameover') {
+      startGame();
+    } else if (gameState === 'paused') {
+      resumeGame();
+    }
+  }, { passive: false });
+
+  card.addEventListener('blur', function () {
+    if (gameState === 'playing') {
+      gameState = 'paused';
+      setScreen('paused'); setHud(false);
+    }
+  });
+
+  /* ================= 核心逻辑 ================= */
+  // 相邻水管的最小水平间距（随分数收紧，但永不小于管宽的 4 倍）
+  function getSpawnSpacing() {
+    var base = 250;
+    var minSpacing = 180;
+    return Math.max(minSpacing, base - Math.floor(score / 10) * 12);
+  }
+
+  // 按距离生成：保证不会出现两根水管叠在一起
+  function maybeSpawnPipe() {
+    if (pipes.length === 0) {
+      if (travelled >= 300) spawnPipe();   // 开局约 1.2 屏后出现第一根
+      return;
+    }
+    var last = pipes[pipes.length - 1];
+    if (last.x <= W - getSpawnSpacing()) spawnPipe();
+  }
+
+  function spawnPipe() {
+    // 水管概率 5/6，电线杆概率 1/6
+    var isPipe = Math.random() < (5 / 6);
+    var width = isPipe ? 40 : 20;
+
+    if (isPipe) {
+      var margin = 10;
+      var minHeight = margin;
+      var maxHeight = (H - 40) - PIPE_GAP - margin;
+      var topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+
+      // 每一根水管的正中间都有金币
+      var centerY = topHeight + PIPE_GAP / 2;
+
+      pipes.push({
+        x: W, topH: topHeight, bottomY: topHeight + PIPE_GAP, width: width, type: 'pipe', passed: false,
+        coin: { y: centerY, collected: false }
+      });
+    } else {
+      // 电线杆高矮大幅浮动：杆顶在画面偏上到偏下之间变化，但始终留出小鸟通过的通道
+      var poleHeight = 40 + Math.random() * 150;   // 40 ~ 190
+      var bottomY = H - 40 - poleHeight;           // 杆顶 90 ~ 240，既不越出上边界也不压到地面
+      // 电线杆不出金币，金币只出现在水管上
+      pipes.push({
+        x: W, topH: 0, bottomY: bottomY, width: width, type: 'pole', passed: false, coin: null
+      });
+    }
+  }
+
+  function update() {
+    frameCount++;
+
+    if (gameState === 'playing') {
+      bgScroll += PIPE_SPEED;
+    } else if (gameState === 'home' || gameState === 'records') {
+      bgScroll += 1.1;
+      if (gameState === 'home') {
+        bird.y = H / 2 + Math.sin(frameCount / 22) * 8;
+        bird.rotation = Math.sin(frameCount / 22) * 0.08;
+      }
+    }
+
+    if (gameState === 'gameover' && camHitFrame >= 0) {
+      camHitFrame++;
+      var f = camHitFrame;
+      var scale = 0;
+
+      if (f <= CAM_HITSTOP) {
+        // 顿帧：画面与小鸟都定住，制造打击感
+        scale = 0;
+      } else if (f <= CAM_HITSTOP + CAM_STRETCH) {
+        // 沿撞击方向被“拉”出去：起步快、末速归零
+        var sp = (f - CAM_HITSTOP) / CAM_STRETCH;
+        scale = 1 - (1 - sp) * (1 - sp);
+      } else if (f <= CAM_HITSTOP + CAM_STRETCH + CAM_REBOUND) {
+        // 橡皮筋回弹：easeOutBack，尾部约 12% 反向过冲再归位
+        var ru = (f - CAM_HITSTOP - CAM_STRETCH) / CAM_REBOUND;
+        var c1 = 1.70158, c3 = c1 + 1;
+        var p1 = ru - 1;
+        var back = 1 + c3 * p1 * p1 * p1 + c1 * p1 * p1;
+        scale = 1 - back;
+      } else {
+        scale = 0;
+        camHitFrame = -1;
+        if (overScreenPending) {
+          overScreenPending = false;
+          setScreen('over');
+        }
+      }
+
+      // 位移 = -撞击方向 × 力度 × 进度（世界被拉向小鸟的前进方向）
+      camX = -camDirX * camAmp * scale;
+      camY = -camDirY * camAmp * scale;
+    }
+
+    if (gameState !== 'playing') return;
+
+    bird.vy += GRAVITY;
+    bird.y += bird.vy;
+
+    if (bird.vy < 0) {
+      bird.rotation = Math.max(-0.4, bird.vy * 0.1);
+    } else {
+      bird.rotation = Math.min(1.2, bird.vy * 0.1);
+    }
+
+    if (bird.y + bird.radius > GROUND_Y) {
+      bird.y = GROUND_Y - bird.radius;
+      gameOver();
+    }
+    if (bird.y - bird.radius < 0) {
+      bird.y = bird.radius;
+      bird.vy = 0;
+    }
+
+    travelled += PIPE_SPEED;
+    maybeSpawnPipe();
+
+    for (var i = pipes.length - 1; i >= 0; i--) {
+      var p = pipes[i];
+      p.x -= PIPE_SPEED;
+
+      // 金币收集检测
+      if (p.coin && !p.coin.collected) {
+        var dx = bird.x - (p.x + p.width / 2);
+        var dy = bird.y - p.coin.y;
+        if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
+          p.coin.collected = true;
+          totalCoins++;
+          runCoins++;
+          localStorage.setItem('flappyTotalCoins', totalCoins);
+          updateScoreUI();
+          playCoinSound();
+        }
+      }
+
+      if (!p.passed && p.x + p.width < bird.x - bird.radius) {
+        p.passed = true;
+        score++;
+        updateScoreUI();
+      }
+
+      if (p.x + p.width < 0) {
+        pipes.splice(i, 1);
+        continue;
+      }
+
+      var hitTop = false;
+      if (p.topH > 0) {
+        hitTop = bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + p.width &&
+                  bird.y - bird.radius < p.topH;
+      }
+
+      var hitBottom = bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + p.width &&
+                      bird.y + bird.radius > p.bottomY;
+
+      if (hitTop || hitBottom) {
+        gameOver();
+      }
+    }
+  }
+
+  function gameOver() {
+    gameState = 'gameover';
+
+    // 撞击方向 = 小鸟相对水管的速度矢量（水平恒为前进速度，垂直取当前 vy）
+    var impactSpeed = Math.sqrt(PIPE_SPEED * PIPE_SPEED + bird.vy * bird.vy);
+    camDirX = PIPE_SPEED / impactSpeed;
+    camDirY = bird.vy / impactSpeed;
+    camAmp = Math.min(12, 8 + impactSpeed * 0.6);   // 力度随撞击速度增长，8~12px
+    camX = 0; camY = 0;
+    camHitFrame = 0;
+
+    playHitSound();
+    setHud(false);
+
+    if (score > 0) {
+      leaderboard.push(score);
+      leaderboard.sort(function (a, b) { return b - a; });
+      leaderboard = leaderboard.filter(function (item, pos) { return leaderboard.indexOf(item) === pos; });
+      leaderboard = leaderboard.slice(0, 3);
+      localStorage.setItem('flappyLeaderboard', JSON.stringify(leaderboard));
+      highScore = leaderboard.length > 0 ? leaderboard[0] : 0;
+    }
+
+    overScore.textContent = 'SCORE ' + score + ' · COIN +' + runCoins;
+    overCoins.textContent = 'TOTAL COIN ' + totalCoins;
+    animateGrade(getRatingIndex(score));
+    overScreenPending = true;   // 镜头回弹完再显示结算面板
+    updateScoreUI();
+  }
+
+  function animateGrade(target) {
+    if (gradeTimer) { clearInterval(gradeTimer); gradeTimer = null; }
+    var i = 0;
+    overGrade.textContent = RATINGS[0];
+    if (target === 0) return;
+    gradeTimer = setInterval(function () {
+      i++;
+      overGrade.textContent = RATINGS[Math.min(i, target)];
+      if (i >= target) { clearInterval(gradeTimer); gradeTimer = null; }
+    }, 70);
+  }
+
+  /* ================= 渲染绘制 ================= */
+  function drawSprite(sprite, x, y, color, scale) {
+    scale = scale || 2;
+    ctx.fillStyle = color;
+    for (var row = 0; row < sprite.length; row++) {
+      var line = sprite[row];
+      for (var col = 0; col < line.length; col++) {
+        if (line.charAt(col) === '1') {
+          ctx.fillRect(x + col * scale, y + row * scale, scale, scale);
+        }
+      }
+    }
+  }
+
+  function drawPixelBird(x, y, scale, rot, frame) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    var sprite = frame % 10 < 5 ? BIRD_UP : BIRD_DOWN;
+    drawSprite(sprite, -6 * scale, -3.5 * scale, '#535353', scale);
+    ctx.restore();
+  }
+
+  /* ---------- 背景：由远及近，越远越淡 ---------- */
+  function rnd(n) {
+    var v = Math.sin(n * 12.9898) * 43758.5453;
+    return v - Math.floor(v);
+  }
+
+  function drawSky() {
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#d6ebf9');
+    g.addColorStop(0.5, '#e9f5fc');
+    g.addColorStop(1, '#f8fcfd');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    // 太阳（最远，最淡）
+    ctx.save();
+    ctx.globalAlpha = 0.14;
+    ctx.fillStyle = '#ffe2ae';
+    ctx.beginPath(); ctx.arc(192, 56, 22, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 0.08;
+    ctx.beginPath(); ctx.arc(192, 56, 36, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  var CLOUDS = [
+    { x: 16, y: 40, sc: 1.0, sp: 0.16, a: 0.88 },
+    { x: 132, y: 24, sc: 0.68, sp: 0.16, a: 0.80 },
+    { x: 150, y: 82, sc: 1.20, sp: 0.26, a: 0.92 },
+    { x: 56, y: 108, sc: 0.78, sp: 0.26, a: 0.84 }
+  ];
+  var CLOUD_PERIOD = 276;
+
+  function drawOneCloud(x, y, sc, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(x, y);
+    ctx.scale(sc, sc);
+    // 底部投影：远虚
+    ctx.fillStyle = 'rgba(202,220,234,0.42)';
+    ctx.fillRect(4, 14, 40, 4);
+    // 云体：逐层加宽，像素风蓬松轮廓
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(11, 0, 15, 4);
+    ctx.fillRect(7, 4, 25, 4);
+    ctx.fillRect(3, 8, 33, 4);
+    ctx.fillRect(0, 12, 42, 4);
+    ctx.fillRect(15, 16, 20, 2);
+    // 边缘淡描边
+    ctx.fillStyle = 'rgba(204,221,235,0.35)';
+    ctx.fillRect(0, 15, 42, 2);
+    ctx.restore();
+  }
+
+  function drawClouds() {
+    for (var i = 0; i < CLOUDS.length; i++) {
+      var c = CLOUDS[i];
+      var x = c.x - (bgScroll * c.sp % CLOUD_PERIOD);
+      if (x > -8) drawOneCloud(x, c.y, c.sc, c.a);
+      if (x < 0) drawOneCloud(x + CLOUD_PERIOD, c.y, c.sc, c.a);
+    }
+  }
+
+  var FAR_PERIOD = 268, MID_PERIOD = 300, NEAR_PERIOD = 220;
+  var farCity = [], midTown = [], nearHill = [];
+
+  (function buildScenery() {
+    var x = 0;
+    while (x < FAR_PERIOD - 10) {
+      var w = 13 + Math.floor(rnd(x + 1) * 14);
+      var h = 26 + Math.floor(rnd(x + 5) * 44);
+      farCity.push({ x: x, w: w, h: h });
+      x += w + 6 + Math.floor(rnd(x + 9) * 10);
+    }
+    x = 0;
+    while (x < MID_PERIOD - 20) {
+      var mw = 24 + Math.floor(rnd(x + 11) * 14);
+      var mh = 20 + Math.floor(rnd(x + 15) * 18);
+      midTown.push({ x: x, w: mw, h: mh });
+      x += mw + 12 + Math.floor(rnd(x + 19) * 14);
+    }
+    x = 0;
+    while (x < NEAR_PERIOD - 10) {
+      var nw = 22 + Math.floor(rnd(x + 21) * 16);
+      var nh = 7 + Math.floor(rnd(x + 25) * 9);
+      nearHill.push({ x: x, w: nw, h: nh });
+      x += nw + 10;
+    }
+  })();
+
+  // 远处城市：最淡、最高，最慢
+  function drawFarCityItem(x, b) {
+    ctx.fillRect(x, GROUND_Y - b.h, b.w, b.h);
+    ctx.fillStyle = '#f2f8fd';
+    for (var wy = GROUND_Y - b.h + 6; wy < GROUND_Y - 6; wy += 9) {
+      for (var wx = x + 4; wx < x + b.w - 3; wx += 8) {
+        ctx.fillRect(wx, wy, 3, 3);
+      }
+    }
+  }
+
+  function drawFarCity() {
+    var shift = bgScroll * 0.14 % FAR_PERIOD;
+    ctx.save();
+    ctx.fillStyle = '#e0eaf3';
+    for (var i = 0; i < farCity.length; i++) {
+      var b = farCity[i];
+      var x = b.x - shift;
+      if (x + b.w > 0 && x < W) drawFarCityItem(x, b);
+      if (x < 0) drawFarCityItem(x + FAR_PERIOD, b);
+    }
+    ctx.restore();
+  }
+
+  // 中景房屋：带屋顶与亮窗
+  function drawMidHouse(x, m) {
+    var base = GROUND_Y, w = m.w, h = m.h, roof = 11;
+    // 屋顶
+    ctx.beginPath();
+    ctx.moveTo(x - 3, base - h);
+    ctx.lineTo(x + w / 2, base - h - roof);
+    ctx.lineTo(x + w + 3, base - h);
+    ctx.closePath();
+    ctx.fill();
+    // 墙体
+    ctx.fillRect(x, base - h, w, h);
+    // 亮着的窗（近处更亮）
+    ctx.fillStyle = '#fbfefF';
+    var cols = Math.max(1, Math.floor(w / 11));
+    for (var c = 0; c < cols; c++) {
+      for (var r = 0; r < 2; r++) {
+        ctx.fillRect(x + 5 + c * 11, base - h + (r === 0 ? 8 : 18), 4, 5);
+      }
+    }
+    // 屋顶压边（区分层次）
+    ctx.fillStyle = 'rgba(150,169,187,0.5)';
+    ctx.fillRect(x - 2, base - h, w + 4, 2);
+  }
+
+  function drawMidTown() {
+    var shift = bgScroll * 0.34 % MID_PERIOD;
+    ctx.save();
+    ctx.fillStyle = '#c3d3e0';
+    for (var i = 0; i < midTown.length; i++) {
+      var m = midTown[i];
+      var x = m.x - shift;
+      if (x + m.w + 4 > 0 && x - 4 < W) drawMidHouse(x, m);
+      if (x < 0) drawMidHouse(x + MID_PERIOD, m);
+    }
+    ctx.restore();
+  }
+
+  // 近景灌木草坡：比远景深，但仍浅于水管
+  function drawHillItem(x, n) {
+    ctx.beginPath();
+    ctx.moveTo(x, GROUND_Y);
+    ctx.quadraticCurveTo(x + n.w / 2, GROUND_Y - n.h * 2.1, x + n.w, GROUND_Y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawNearHill() {
+    var shift = bgScroll * 0.85 % NEAR_PERIOD;
+    ctx.save();
+    ctx.fillStyle = '#9fb2c2';
+    for (var i = 0; i < nearHill.length; i++) {
+      var n = nearHill[i];
+      var x = n.x - shift;
+      if (x + n.w > 0 && x < W) drawHillItem(x, n);
+      if (x < 0) drawHillItem(x + NEAR_PERIOD, n);
+    }
+    ctx.restore();
+  }
+
+  function drawGround() {
+    ctx.fillStyle = '#f4f6f8';
+    ctx.fillRect(0, GROUND_Y + 2, W, H - GROUND_Y - 2);
+
+    ctx.fillStyle = '#535353';
+    ctx.fillRect(0, GROUND_Y, W, 2);
+
+    ctx.fillStyle = '#dfe3e8';
+    var off = bgScroll % 20;
+    for (var i = -20; i < W + 20; i += 20) {
+      ctx.fillRect(i - off, H - 20, 10, 2);
+    }
+  }
+
+  function drawPipes() {
+    for (var i = 0; i < pipes.length; i++) {
+      var p = pipes[i];
+      ctx.fillStyle = '#535353';
+
+      if (p.type === 'pipe') {
+        ctx.fillRect(p.x, 0, p.width, p.topH);
+        ctx.fillRect(p.x - 4, p.topH - 20, p.width + 8, 20);
+        ctx.fillRect(p.x, p.bottomY, p.width, GROUND_Y - p.bottomY);
+        ctx.fillRect(p.x - 4, p.bottomY, p.width + 8, 20);
+
+        ctx.fillStyle = '#e5e7eb';
+        ctx.fillRect(p.x + 6, 0, 4, Math.max(0, p.topH - 20));
+        ctx.fillRect(p.x + 6, p.bottomY + 20, 4, Math.max(0, GROUND_Y - p.bottomY - 20));
+      } else {
+        ctx.fillRect(p.x + 5, p.bottomY, p.width - 10, GROUND_Y - p.bottomY);
+        ctx.fillRect(p.x, p.bottomY + 4, p.width, 6);
+        ctx.fillRect(p.x, p.bottomY + 19, p.width, 6);
+        ctx.fillRect(p.x, p.bottomY + 34, p.width, 6);
+      }
+    }
+  }
+
+  function drawCoins() {
+    for (var i = 0; i < pipes.length; i++) {
+      var p = pipes[i];
+      if (!p.coin || p.coin.collected) continue;
+      var cx = p.x + p.width / 2;
+      var cy = p.coin.y;
+      ctx.fillStyle = '#535353';
+      ctx.fillRect(cx - 5, cy - 5, 10, 10);
+      ctx.fillStyle = '#f7f7f7';
+      ctx.fillRect(cx - 2, cy - 2, 4, 4);
+    }
+  }
+
+  function draw() {
+    drawSky();
+
+    ctx.save();
+    ctx.translate(camX, camY);
+    drawClouds();
+    drawFarCity();
+    drawMidTown();
+    drawNearHill();
+    drawGround();
+    drawPipes();
+    drawCoins();
+    ctx.restore();
+    if (gameState !== 'home' && gameState !== 'records') {
+      drawPixelBird(bird.x, bird.y, 2, bird.rotation, frameCount);
+    }
+  }
+
+  function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  /* ================= 窗口拖动 ================= */
+  var isDragging = false;
+  var dragStartX = 0, dragStartY = 0;
+  var cardStartX = 0, cardStartY = 0;
+
+  card.addEventListener('mousedown', function (e) {
+    if (e.ctrlKey && e.button === 0) {
+      e.preventDefault();
+      var rect = card.getBoundingClientRect();
+      card.style.right = 'auto'; card.style.bottom = 'auto';
+      card.style.left = rect.left + 'px'; card.style.top = rect.top + 'px';
+      isDragging = true;
+      dragStartX = e.clientX; dragStartY = e.clientY;
+      cardStartX = rect.left; cardStartY = rect.top;
+      card.classList.add('dragging');
+    }
+  });
+
+  window.addEventListener('mousemove', function (e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    var dx = e.clientX - dragStartX; var dy = e.clientY - dragStartY;
+    var newLeft = Math.max(0, Math.min(cardStartX + dx, window.innerWidth - card.offsetWidth));
+    var newTop = Math.max(0, Math.min(cardStartY + dy, window.innerHeight - card.offsetHeight));
+    card.style.left = newLeft + 'px'; card.style.top = newTop + 'px';
+  });
+
+  window.addEventListener('mouseup', function (e) {
+    if (isDragging) { isDragging = false; card.classList.remove('dragging'); }
+  });
+
+  updateScoreUI();
+  goHome();
+  gameLoop();
+
+})();
+</script>
+</body>
+</html>
